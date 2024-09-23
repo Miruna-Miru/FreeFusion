@@ -15,12 +15,12 @@ const SignUp = ({ navigation }) => {
   const handleSignUp = () => {
     if (phoneNumber.length === 10 && username && password) {
       // Proceed with sign-up logic
-      alert('Sign-up successful!');
+      navigation.navigate('Home'); // Call navigate directly
     } else {
       alert('Please enter valid credentials. Phone number should be 10 digits.');
     }
   };
-
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Sign Up</Text>

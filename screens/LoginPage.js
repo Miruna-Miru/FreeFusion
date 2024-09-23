@@ -1,6 +1,7 @@
 // screens/LoginPage.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for the eye icon
 
 export default function LoginPage({ navigation }) {
   const [email, setEmail] = useState('');
@@ -18,8 +19,13 @@ export default function LoginPage({ navigation }) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      {/* FreeFusion Text */}
+      <Text style={styles.brandTitle}>FreeFusion</Text>
+
+      {/* Welcome Title */}
       <Text style={styles.title}>Hello Again!!</Text>
 
+      {/* Tabs for Freelancer and Customer */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tab, isFreelancer && styles.activeTab]}
@@ -35,31 +41,41 @@ export default function LoginPage({ navigation }) {
         </TouchableOpacity>
       </View>
 
+      {/* Email Input */}
       <TextInput
         style={styles.input}
-        placeholder={isFreelancer ? "Freelancer Email" : "Customer Email"}
+        placeholder={isFreelancer ? 'Freelancer Email' : 'Customer Email'}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry={obscureText}
-      />
 
-      <TouchableOpacity onPress={() => setObscureText(!obscureText)}>
-        <Text style={styles.togglePassword}>{obscureText ? 'Show' : 'Hide'} Password</Text>
-      </TouchableOpacity>
+      {/* Password Input with Eye Icon */}
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={obscureText}
+        />
+        <TouchableOpacity onPress={() => setObscureText(!obscureText)} style={styles.eyeIcon}>
+          <Ionicons
+            name={obscureText ? 'eye-off-outline' : 'eye-outline'}
+            size={20}
+            color="gray"
+          />
+        </TouchableOpacity>
+      </View>
 
+      {/* Login Button */}
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
+      {/* Sign Up Link */}
       <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-        <Text style={styles.signupLink}>New user? SignUp</Text>
+        <Text style={styles.signupLink}>New user? Sign Up</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -71,6 +87,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 20,
     justifyContent: 'center',
+  },
+  brandTitle: {
+    fontSize: 38,
+    fontWeight: 'bold',
+    color: 'green',
+    textAlign: 'center',
+    marginBottom: 10,
   },
   title: {
     fontSize: 28,
@@ -109,10 +132,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 20,
   },
-  togglePassword: {
-    color: 'blue',
-    textAlign: 'right',
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: 'green',
+    borderWidth: 1,
+    borderRadius: 20,
     marginBottom: 20,
+  },
+  passwordInput: {
+    flex: 1,
+    height: 40,
+    paddingHorizontal: 10,
+  },
+  eyeIcon: {
+    padding: 10,
   },
   button: {
     backgroundColor: 'green',
