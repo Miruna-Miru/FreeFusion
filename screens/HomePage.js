@@ -1,145 +1,76 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; // Make sure to install react-native-vector-icons
-import HamburgerMenu from './Hamburgermenu'; // Import your HamburgerMenu component
+import React from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import SearchBar from '../components/SearchBar'; // Adjust the path to your SearchBar component
 
-export default function HomeScreen() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+const HomePage = () => {
+  const categories = [
+    { id: 1, title: 'UI UX design', image: require('../assets/back.jpg') },
+    { id: 2, title: 'Animation', image: require('../assets/front.jpg') },
+    { id: 3, title: 'Fullstack Developer', image: require('../assets/uiux.jpg') },
+    { id: 4, title: 'Machine Learining', image: require('../assets/ml.jpg') },
+    { id: 5, title: 'Data Science', image: require('../assets/data.jpg') },
+    
+  ];
 
   return (
-    <View style={styles.container}>
-      {/* Hamburger menu */}
-      <TouchableOpacity style={styles.hamburgerIcon} onPress={toggleMenu}>
-        <Icon name="menu" size={30} color="white" />
-      </TouchableOpacity>
+    <ScrollView style={styles.container}>
+      <SearchBar />
+      <Text style={styles.headerText}>Explore Top Categories</Text>
 
-      {/* Main content */}
-      <View style={styles.mainContent}>
-        {/* Company logo */}
-{/*<Image
-          source={require('./assets/logo.png')} // Change this to your logo path
-          style={styles.logo}
-        />
-        */}
-        <Text style={styles.amount}>- $2.15</Text>
-        <Text style={styles.store}>Starbucks</Text>
-
-        <TouchableOpacity style={styles.tagButton}>
-          <Text style={styles.tagText}>Coffee</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.addButton}>
-          <Icon name="add" size={20} color="white" />
-          <Text style={styles.addButtonText}>Add note</Text>
-        </TouchableOpacity>
-
-        {/* Tags section */}
-        <View style={styles.tags}>
-          <Text style={styles.tag}>#food</Text>
-          <Text style={styles.tag}>#fastfood</Text>
-          <Text style={styles.tag}>#coffee</Text>
+      {categories.map((category) => (
+        <View key={category.id} style={styles.card}>
+          <Image source={category.image} style={styles.cardImage} />
+          <View style={styles.cardContent}>
+            <Text style={styles.cardTitle}>{category.title}</Text>
+            <TouchableOpacity>
+              <Text style={styles.cardButton}>&gt;</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-
-      {/* Location and other details */}
-      <View style={styles.details}>
-        <Text style={styles.location}>
-          6887 Sunset St, South Valley, Vermont, United States
-        </Text>
-        <Text style={styles.date}>30 Jul 2019, 8:24 AM</Text>
-      </View>
-
-      {/* Hamburger menu */}
-      {isMenuOpen && <HamburgerMenu closeMenu={toggleMenu} />}
-    </View>
+      ))}
+    </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#4CAF50', // Green background color
-    paddingTop: 50, // Top padding for safe area
-  },
-  hamburgerIcon: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-  },
-  mainContent: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logo: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 20,
-  },
-  amount: {
-    fontSize: 32,
-    color: 'white',
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  store: {
-    fontSize: 18,
-    color: 'white',
-    marginBottom: 20,
-  },
-  tagButton: {
     backgroundColor: 'white',
-    paddingVertical: 5,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    marginBottom: 20,
+    paddingHorizontal: 16,
   },
-  tagText: {
-    color: '#4CAF50',
-    fontSize: 16,
+  headerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginVertical: 20,
   },
-  addButton: {
+  card: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
     flexDirection: 'row',
+    padding: 16,
     alignItems: 'center',
-    backgroundColor: '#6A0DAD',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 30,
+    marginBottom: 16,
   },
-  addButtonText: {
-    color: 'white',
-    fontSize: 16,
-    marginLeft: 10,
+  cardImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 10,
+    marginRight: 16,
   },
-  tags: {
+  cardContent: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
-    marginBottom: 20,
+    alignItems: 'center',
   },
-  tag: {
-    backgroundColor: '#FF8A65',
-    color: 'white',
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    borderRadius: 15,
-    marginRight: 10,
-  },
-  details: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  location: {
+  cardTitle: {
     fontSize: 16,
-    color: 'white',
-    marginBottom: 10,
+    fontWeight: 'bold',
   },
-  date: {
-    fontSize: 14,
-    color: 'white',
+  cardButton: {
+    fontSize: 24,
+    color: '#007bff',
   },
 });
+
+export default HomePage;
