@@ -7,6 +7,11 @@ import HomePage from './screens/HomePage';
 import LoginPage from './screens/LoginPage';
 import SignUpPage from './screens/SignUpPage';
 import SplashScreen from './screens/SplashScreen';
+import WelcomeScreen from './screens/WelcomeScreen';
+import FreeHome from './screens/FreeHome';
+import FreeProfile from './screens/Freeprofile';
+import FreeSettings from './screens/FreeSettings';
+
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -22,14 +27,14 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Drawer Navigator for the Home Page only
+
   const HomeDrawer = () => (
     <Drawer.Navigator>
       <Drawer.Screen name="Home" component={HomePage} />
     </Drawer.Navigator>
   );
 
-  // Stack Navigator for Splash, Login, and SignUp without the drawer
+
   const StackNavigator = () => (
     <Stack.Navigator>
       {!isSplashDone ? (
@@ -48,11 +53,31 @@ export default function App() {
           <Stack.Screen
             name="SignUp"
             component={SignUpPage}
-            options={{ title: 'Sign Up Page' }}
+            options={{ headerShown:false }}
           />
           <Stack.Screen
             name="Home"
             component={HomeDrawer}
+            options={{ headerShown: false }}
+          />
+           <Stack.Screen
+            name="WelcomeScreen"
+            component={WelcomeScreen}
+            options={{ headerShown: false }}
+          />
+           <Stack.Screen
+            name="FreeHome"
+            component={FreeHome}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="FreeProfile"
+            component={FreeProfile}
+            options={{ headerShown: false }}
+          />
+           <Stack.Screen
+            name="FreeSettings"
+            component={FreeSettings}
             options={{ headerShown: false }}
           />
         </>

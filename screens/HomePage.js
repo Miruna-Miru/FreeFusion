@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
-import SearchBar from '../components/SearchBar'; // Adjust the path to your SearchBar component
+import SearchBar from '../components/SearchBar'; 
 
 const HomePage = () => {
   const categories = [

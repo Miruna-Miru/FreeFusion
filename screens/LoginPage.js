@@ -1,7 +1,6 @@
-// screens/LoginPage.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for the eye icon
+import { Ionicons } from '@expo/vector-icons'; 
 
 export default function LoginPage({ navigation }) {
   const [email, setEmail] = useState('');
@@ -11,7 +10,11 @@ export default function LoginPage({ navigation }) {
 
   const handleLogin = () => {
     if (email && password) {
-      navigation.navigate('Home');
+      if (isFreelancer) {
+        navigation.navigate('FreeHome');
+      } else {
+        navigation.navigate('Home');
+      }
     } else {
       alert('Please enter valid credentials.');
     }
@@ -19,13 +22,8 @@ export default function LoginPage({ navigation }) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* FreeFusion Text */}
       <Text style={styles.brandTitle}>FreeFusion</Text>
-
-      {/* Welcome Title */}
       <Text style={styles.title}>Hello Again!!</Text>
-
-      {/* Tabs for Freelancer and Customer */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tab, isFreelancer && styles.activeTab]}
@@ -40,8 +38,6 @@ export default function LoginPage({ navigation }) {
           <Text style={[styles.tabText, !isFreelancer && styles.activeTabText]}>Customer</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Email Input */}
       <TextInput
         style={styles.input}
         placeholder={isFreelancer ? 'Freelancer Email' : 'Customer Email'}
@@ -49,8 +45,6 @@ export default function LoginPage({ navigation }) {
         onChangeText={setEmail}
         keyboardType="email-address"
       />
-
-      {/* Password Input with Eye Icon */}
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
@@ -67,13 +61,9 @@ export default function LoginPage({ navigation }) {
           />
         </TouchableOpacity>
       </View>
-
-      {/* Login Button */}
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-
-      {/* Sign Up Link */}
       <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
         <Text style={styles.signupLink}>New user? Sign Up</Text>
       </TouchableOpacity>

@@ -1,40 +1,48 @@
-// components/BottomNavBar.js
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-export default function BottomNavBar({ navigation }) {
+const NavBar = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
+
+  const getColor = (page) => (route.name === page ? 'green' : 'black');
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Home')}>
-        <Icon name="home" size={25} color="#000" />
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeSettings')}>
+        <Icon name="settings" size={24} color={getColor('FreeSettings')} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Settings')}>
-        <Icon name="cogs" size={25} color="#000" />
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeHome')}>
+        <Icon name="home" size={24} color={getColor('FreeHome')} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Profile')}>
-        <Icon name="user" size={25} color="#000" />
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeProfile')}>
+        <Icon name="person" size={24} color={getColor('FreeProfile')} />
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: '#d3d3d3',
-    height: 60,
+    backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    elevation: 5, // Adds a shadow effect on Android
-    shadowColor: '#000', // Adds a shadow effect on iOS
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    elevation: 5,
+    paddingVertical: 10,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
-  iconContainer: {
-    padding: 10,
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
   },
 });
+
+export default NavBar;
