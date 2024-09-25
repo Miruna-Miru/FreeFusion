@@ -1,11 +1,11 @@
 // screens/LoginPage.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for the eye icon
+import { Ionicons } from '@expo/vector-icons'; 
 import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../firebaseconfig'; // Import your Firebase configuration
+import { db } from '../firebaseconfig'; 
 
 export default function LoginPage({ navigation }) {
   const [email, setEmail] = useState('');
@@ -20,30 +20,27 @@ export default function LoginPage({ navigation }) {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const userId = userCredential.user.uid;
   
-        // Log the user ID to check
         console.log(`Logged in User ID: ${userId}`);
   
-        // Query Firestore for customers and freelancers using email
         const customersQuery = query(collection(db, 'customers'), where('email', '==', email));
         const freelancersQuery = query(collection(db, 'freelancers'), where('email', '==', email));
   
-        // Fetch documents based on email
         const customerSnapshot = await getDocs(customersQuery);
         const freelancerSnapshot = await getDocs(freelancersQuery);
   
-        // Check if documents exist
+    
         if (!customerSnapshot.empty) {
-          const username = customerSnapshot.docs[0].data().username; // Adjust field name as necessary
+          const username = customerSnapshot.docs[0].data().username; 
           Alert.alert('Success', 'Customer login successful!');
           navigation.navigate('FreeHome', { username });
           const email = freelancerSnapshot.docs[0].data().email; 
         } else if (!freelancerSnapshot.empty) {
-          const username = freelancerSnapshot.docs[0].data().username; // Adjust field name as necessary
+          const username = freelancerSnapshot.docs[0].data().username; 
           Alert.alert('Success', 'Freelancer login successful!');
-          navigation.navigate('FreeHome', { username, email }); // Pass the username to FreeHome
+          navigation.navigate('FreeHome', { username, email }); 
         } else {
           Alert.alert('Error', 'Login credentials do not match any account type.');
-          auth.signOut(); // Sign out if no match found
+          auth.signOut();
         }
       } catch (error) {
         console.error('Login Error:', error);
@@ -59,13 +56,12 @@ export default function LoginPage({ navigation }) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* FreeFusion Text */}
+    
       <Text style={styles.brandTitle}>FreeFusion</Text>
 
-      {/* Welcome Title */}
+
       <Text style={styles.title}>Hello Again!!</Text>
 
-      {/* Tabs for Freelancer and Customer */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tab, isFreelancer && styles.activeTab]}
@@ -81,7 +77,6 @@ export default function LoginPage({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Email Input */}
       <TextInput
         style={styles.input}
         placeholder={isFreelancer ? 'Freelancer Email' : 'Customer Email'}
@@ -90,7 +85,7 @@ export default function LoginPage({ navigation }) {
         keyboardType="email-address"
       />
 
-      {/* Password Input with Eye Icon */}
+  
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
@@ -108,12 +103,12 @@ export default function LoginPage({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Login Button */}
+ 
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-      {/* Sign Up Link */}
+  
       <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
         <Text style={styles.signupLink}>New user? Sign Up</Text>
       </TouchableOpacity>

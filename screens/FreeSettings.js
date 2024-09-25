@@ -6,8 +6,8 @@ import NavBar from './NavBar';
 
 const FreeSettings = () => {
   const navigation = useNavigation();
-  const route = useRoute(); // Get the route object
-  const { email } = route.params; // Access email from route.params
+  const route = useRoute(); 
+  const { email } = route.params; 
 
   const handleLogout = () => {
     Alert.alert(

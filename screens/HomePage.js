@@ -28,7 +28,7 @@ const HomePage = () => {
   const handleInputChange = (name, value) => setFormData({ ...formData, [name]: value });
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <SearchBar />
       <Text style={styles.headerText}>Explore Top Categories</Text>
       <ScrollView style={styles.cardsScrollView}>
