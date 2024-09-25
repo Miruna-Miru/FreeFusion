@@ -48,7 +48,7 @@ const FreeHome = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>  
+    <View style={styles.container}>
       <View style={styles.avatarContainer}>
         <Image
           source={require('../assets/ml.jpg')}
@@ -74,7 +74,7 @@ const FreeHome = () => {
         />
       </View>
 
-      <View style={styles.cardContainer}> 
+      <ScrollView style={styles.cardContainer}> 
         {projectCards.map((project) => (
           <TouchableOpacity key={project.id} onPress={() => handleCardPress(project)} style={styles.card}>
             <Text style={styles.cardTitle}>{project.title}</Text>
@@ -82,7 +82,7 @@ const FreeHome = () => {
             <Text style={styles.cardDescription}>{project.description}</Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
 
       <Modal
         animationType="slide"
@@ -114,13 +114,13 @@ const FreeHome = () => {
       </Modal>
 
       <NavBar />
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,  
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
@@ -131,26 +131,26 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: 100,
     height: 100,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   avatar: {
-    width: '100%',
-    height: '100%',
+    width: '80%',
+    height: '80%',
     borderRadius: 50,
   },
   userName: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: 'green',
   },
   ongoingProjectsText: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     color: 'black',
     marginVertical: 10,
   },
   carouselContainer: {
-    height: 220,  
+    height: 180,  
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,  
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   carouselImage: {
     width: '100%',
-    height: '80%',
+    height: '70%',
     borderRadius: 10,
   },
   carouselText: {
@@ -176,6 +176,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     width: '90%',
     marginTop: 10,  
+    marginBottom: 20,
   },
   card: {
     backgroundColor: '#fff',

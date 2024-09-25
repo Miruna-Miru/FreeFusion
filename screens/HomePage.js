@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput, Modal, KeyboardAvoidingView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import SearchBar from '../components/SearchBar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const HomePage = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { companyName, contactInfo } = route.params || {};
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState({
     projectTitle: '',
@@ -14,29 +16,21 @@ const HomePage = () => {
     salary: '',
   });
 
-  const companyInfo = {
-    companyName: 'Acme Corp',
-    contactInfo: '123-456-7890',
-  };
-
   const categories = [
     { id: 1, title: 'UI UX design', image: require('../assets/back.jpg'), screen: 'UiUx' },
     { id: 2, title: 'Animation', image: require('../assets/front.jpg'), screen: 'Animation' },
     { id: 3, title: 'Fullstack Developer', image: require('../assets/uiux.jpg'), screen: 'FullStack' },
     { id: 4, title: 'Machine Learning', image: require('../assets/ml.jpg'), screen: 'ML' },
     { id: 5, title: 'Data Science', image: require('../assets/data.jpg'), screen: 'DS' },
-    
   ];
 
   const toggleModal = () => setIsModalVisible(!isModalVisible);
-
   const handleInputChange = (name, value) => setFormData({ ...formData, [name]: value });
 
   return (
     <View style={styles.container}>
       <SearchBar />
       <Text style={styles.headerText}>Explore Top Categories</Text>
-
       <ScrollView style={styles.cardsScrollView}>
         {categories.map((category) => (
           <View key={category.id} style={styles.card}>
@@ -50,11 +44,9 @@ const HomePage = () => {
           </View>
         ))}
       </ScrollView>
-
       <TouchableOpacity style={styles.addButton} onPress={toggleModal}>
         <Icon name="plus" size={24} color="white" />
       </TouchableOpacity>
-
       <Modal visible={isModalVisible} animationType="slide" transparent={true}>
         <KeyboardAvoidingView style={styles.modalContainer} behavior="padding">
           <View style={styles.modalContent}>
@@ -62,7 +54,7 @@ const HomePage = () => {
             <TextInput
               style={styles.input}
               placeholder="Company Name"
-              value={companyInfo.companyName}
+              value={companyName}
               editable={false}
             />
             <TextInput
@@ -92,7 +84,7 @@ const HomePage = () => {
             <TextInput
               style={styles.input}
               placeholder="Contact Info"
-              value={companyInfo.contactInfo}
+              value={contactInfo}
               editable={false}
             />
             <TouchableOpacity style={styles.sendButton} onPress={toggleModal}>
