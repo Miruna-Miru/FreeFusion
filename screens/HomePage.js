@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput, Modal, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput, Modal, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import SearchBar from '../components/SearchBar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const HomePage = () => {
@@ -29,9 +28,8 @@ const HomePage = () => {
 
   return (
     <View style={styles.container}>
-      <SearchBar />
       <Text style={styles.headerText}>Explore Top Categories</Text>
-      <ScrollView style={styles.cardsScrollView}>
+      <ScrollView contentContainerStyle={styles.cardsContainer}>
         {categories.map((category) => (
           <View key={category.id} style={styles.card}>
             <Image source={category.image} style={styles.cardImage} />
@@ -48,7 +46,7 @@ const HomePage = () => {
         <Icon name="plus" size={24} color="white" />
       </TouchableOpacity>
       <Modal visible={isModalVisible} animationType="slide" transparent={true}>
-        <KeyboardAvoidingView style={styles.modalContainer} behavior="padding">
+        <KeyboardAvoidingView style={styles.modalContainer} behavior={Platform.OS === 'ios' ? 'padding' : null}>
           <View style={styles.modalContent}>
             <Text style={styles.modalHeader}>New Project</Text>
             <TextInput
@@ -108,6 +106,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 20,
   },
+  cardsContainer: {
+    paddingBottom: 80,
+  },
   card: {
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
@@ -136,7 +137,51 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#007bff',
   },
+  addButton: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    backgroundColor: 'green',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  input: {
+    width: '100%',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'green',
+    borderRadius: 10,
+    marginBottom: 15,
+  },
+  sendButton: {
+    backgroundColor: 'green',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 10,
+  },
 });
 
 export default HomePage;
-

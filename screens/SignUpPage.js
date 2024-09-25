@@ -19,11 +19,8 @@ const SignUp = ({ navigation }) => {
   const handleSignUp = async () => {
     if (phoneNumber.length === 10 && username && password) {
       try {
-       
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const userId = userCredential.user.uid; 
-  
-  
         const userData = {
           email,
           username,
@@ -31,22 +28,17 @@ const SignUp = ({ navigation }) => {
           role,
           address,
         };
-  
-        
         const collectionName = activeTab === 'Customer' ? 'customers' : 'freelancers';
-  
         await addDoc(collection(db, collectionName), {
           ...userData,
           uid: userId, 
         });
-  
         alert('Sign up successful!');
-       
-      if (activeTab === 'Customer') {
-        navigation.navigate('Home');
-      } else {
-        navigation.navigate('WelcomeScreen',{username}); 
-      }
+        if (activeTab === 'Customer') {
+          navigation.navigate('Home', { username, email, address });
+        } else {
+          navigation.navigate('WelcomeScreen', { username, email, address }); 
+        }
       } catch (error) {
         console.error('Error during sign-up: ', error);
         alert('Error during sign-up: ' + error.message);
@@ -59,7 +51,6 @@ const SignUp = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
-   
       <View style={styles.tabContainer}>
         <TouchableOpacity 
           style={[styles.tab, activeTab === 'Customer' && styles.activeTab]}
@@ -76,7 +67,6 @@ const SignUp = ({ navigation }) => {
           {activeTab === 'Freelancer' && <View style={styles.underline} />}
         </TouchableOpacity>
       </View>
-
       {activeTab === 'Customer' && (
         <>
           <Picker
@@ -89,7 +79,6 @@ const SignUp = ({ navigation }) => {
             <Picker.Item label="Individual" value="Individual" />
             <Picker.Item label="Business" value="Business" />
           </Picker>
-          
           <TextInput
             placeholder="Address"
             style={styles.input}
@@ -98,8 +87,6 @@ const SignUp = ({ navigation }) => {
           />
         </>
       )}
-
-  
       <TextInput
         placeholder="Phone Number"
         style={styles.input}
@@ -108,26 +95,19 @@ const SignUp = ({ navigation }) => {
         value={phoneNumber}
         onChangeText={setPhoneNumber}
       />
-
-      {/* E-mail ID Field */}
-        
       <TextInput
-          placeholder="E-mail ID"
-          style={styles.input}
-          keyboardType="default"
-          onChangeText={(text) => setE_mail(text)}
-          value={email}
-        />
-
-
+        placeholder="E-mail ID"
+        style={styles.input}
+        keyboardType="default"
+        onChangeText={(text) => setE_mail(text)}
+        value={email}
+      />
       <TextInput
         placeholder="Username"
         style={styles.input}
         value={username}
         onChangeText={setUsername}
       />
-
-    
       <View style={styles.passwordContainer}>
         <TextInput
           placeholder="Password"
@@ -143,12 +123,9 @@ const SignUp = ({ navigation }) => {
           <Icon name={showPassword ? 'visibility-off' : 'visibility'} size={20} color="gray" />
         </TouchableOpacity>
       </View>
-
       <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
         <Text style={styles.signUpButtonText}>Sign Up as {activeTab}</Text>
       </TouchableOpacity>
-
-
       <TouchableOpacity onPress={() => navigation.navigate('Login')}>
         <Text style={styles.loginLink}>Already have an account? Login</Text>
       </TouchableOpacity>

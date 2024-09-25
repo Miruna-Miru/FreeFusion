@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
 import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseconfig'; 
 
@@ -19,21 +18,18 @@ export default function LoginPage({ navigation }) {
         const auth = getAuth();
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const userId = userCredential.user.uid;
-  
         console.log(`Logged in User ID: ${userId}`);
-  
+
         const customersQuery = query(collection(db, 'customers'), where('email', '==', email));
         const freelancersQuery = query(collection(db, 'freelancers'), where('email', '==', email));
-  
+
         const customerSnapshot = await getDocs(customersQuery);
         const freelancerSnapshot = await getDocs(freelancersQuery);
-  
-    
+
         if (!customerSnapshot.empty) {
           const username = customerSnapshot.docs[0].data().username; 
           Alert.alert('Success', 'Customer login successful!');
-          navigation.navigate('FreeHome', { username });
-          const email = freelancerSnapshot.docs[0].data().email; 
+          navigation.navigate('Home');
         } else if (!freelancerSnapshot.empty) {
           const username = freelancerSnapshot.docs[0].data().username; 
           Alert.alert('Success', 'Freelancer login successful!');
@@ -51,17 +47,11 @@ export default function LoginPage({ navigation }) {
       Alert.alert('Error', 'Please enter valid credentials.');
     }
   };
-  
-  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-    
       <Text style={styles.brandTitle}>FreeFusion</Text>
-
-
       <Text style={styles.title}>Hello Again!!</Text>
-
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tab, isFreelancer && styles.activeTab]}
@@ -76,7 +66,6 @@ export default function LoginPage({ navigation }) {
           <Text style={[styles.tabText, !isFreelancer && styles.activeTabText]}>Customer</Text>
         </TouchableOpacity>
       </View>
-
       <TextInput
         style={styles.input}
         placeholder={isFreelancer ? 'Freelancer Email' : 'Customer Email'}
@@ -84,8 +73,6 @@ export default function LoginPage({ navigation }) {
         onChangeText={setEmail}
         keyboardType="email-address"
       />
-
-  
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
@@ -102,13 +89,9 @@ export default function LoginPage({ navigation }) {
           />
         </TouchableOpacity>
       </View>
-
- 
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-
-  
       <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
         <Text style={styles.signupLink}>New user? Sign Up</Text>
       </TouchableOpacity>
@@ -198,4 +181,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-

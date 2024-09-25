@@ -28,18 +28,15 @@ export default function App() {
     const timer = setTimeout(() => {
       setIsSplashDone(true);
     }, 4000);
-
     return () => clearTimeout(timer);
   }, []);
-
 
   const HomeDrawer = () => (
     <Drawer.Navigator>
       <Drawer.Screen name="Home" component={HomePage} />
-      <Drawer.Screen name="Profile" component={CustProfile}/>
+      <Drawer.Screen name="Profile" component={CustProfile} />
     </Drawer.Navigator>
   );
-
 
   const StackNavigator = () => (
     <Stack.Navigator>
@@ -59,19 +56,19 @@ export default function App() {
           <Stack.Screen
             name="SignUp"
             component={SignUpPage}
-            options={{ headerShown:false }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Home"
             component={HomeDrawer}
             options={{ headerShown: false }}
           />
-           <Stack.Screen
+          <Stack.Screen
             name="WelcomeScreen"
             component={WelcomeScreen}
             options={{ headerShown: false }}
           />
-           <Stack.Screen
+          <Stack.Screen
             name="FreeHome"
             component={FreeHome}
             options={{ headerShown: false }}
@@ -81,7 +78,7 @@ export default function App() {
             component={FreeProfile}
             options={{ headerShown: false }}
           />
-           <Stack.Screen
+          <Stack.Screen
             name="FreeSettings"
             component={FreeSettings}
             options={{ headerShown: false }}

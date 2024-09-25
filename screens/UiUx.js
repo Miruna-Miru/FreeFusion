@@ -3,13 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { useNavigation } from '@react-navigation/native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Avatar } from 'react-native-paper';
+import * as MailComposer from 'expo-mail-composer';
 
 const UiUx = () => {
   const navigation = useNavigation();
   const users = [
-    { id: 1, name: 'John Doe', rating: '4.9', avatar: require('../assets/back.jpg'), description: 'Experienced UI/UX Designer specializing in mobile apps.' },
-    { id: 2, name: 'Jane Smith', rating: '4.8', avatar: require('../assets/back.jpg'), description: 'Expert in designing user-friendly interfaces.' },
-    { id: 3, name: 'Alex Brown', rating: '4.7', avatar: require('../assets/back.jpg'), description: 'Passionate about creating intuitive designs.' },
+    { id: 1, name: 'John Doe', rating: '4.9', avatar: require('../assets/back.jpg'), description: 'Experienced UI/UX Designer specializing in mobile apps.', email: 'mirmirunalini@gmail.com' },
+    { id: 2, name: 'Jane Smith', rating: '4.8', avatar: require('../assets/back.jpg'), description: 'Expert in designing user-friendly interfaces.', email: 'jane.smith@example.com' },
+    { id: 3, name: 'Alex Brown', rating: '4.7', avatar: require('../assets/back.jpg'), description: 'Passionate about creating intuitive designs.', email: 'alex.brown@example.com' },
   ];
 
   const FlipCard = ({ user }) => {
@@ -32,6 +33,14 @@ const UiUx = () => {
       rotateY.value = withTiming(isFlipped ? 0 : 180, { duration: 500 });
     };
 
+    const sendEmail = () => {
+      MailComposer.composeAsync({
+        recipients: [user.email],
+        subject: 'Connect with you',
+        body: 'Hello, I would like to connect with you regarding your UI/UX services.',
+      });
+    };
+
     return (
       <TouchableOpacity onPress={flipCard} style={styles.card}>
         <Animated.View style={[styles.cardFront, frontStyle]}>
@@ -41,7 +50,8 @@ const UiUx = () => {
         </Animated.View>
         <Animated.View style={[styles.cardBack, backStyle]}>
           <Text style={styles.description}>{user.description}</Text>
-          <TouchableOpacity style={styles.connectButton}>
+          <Text style={styles.email}>Email: {user.email}</Text>
+          <TouchableOpacity style={styles.connectButton} onPress={sendEmail}>
             <Text style={styles.connectButtonText}>Connect</Text>
           </TouchableOpacity>
         </Animated.View>
@@ -57,9 +67,7 @@ const UiUx = () => {
         </TouchableOpacity>
         <Text style={styles.headerText}>UI UX</Text>
       </View>
-
       <Text style={styles.introText}>Explore & find the matching UIUX developer</Text>
-
       <ScrollView contentContainerStyle={styles.cardList}>
         {users.map((user) => (
           <FlipCard key={user.id} user={user} />
@@ -74,7 +82,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 16,
-    paddingTop: 30, 
+    paddingTop: 30,
   },
   header: {
     flexDirection: 'row',
@@ -83,7 +91,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     fontSize: 24,
-    color: 'black', 
+    color: 'black',
     marginRight: 16,
   },
   headerText: {
@@ -132,6 +140,12 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   description: {
+    fontSize: 14,
+    color: '#fff',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  email: {
     fontSize: 14,
     color: '#fff',
     marginBottom: 20,
