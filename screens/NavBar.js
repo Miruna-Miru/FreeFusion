@@ -6,12 +6,13 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 const NavBar = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const email = route.params;
 
   const getColor = (page) => (route.name === page ? 'green' : 'black');
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeSettings')}>
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeSettings', email)}>
         <Icon name="settings" size={24} color={getColor('FreeSettings')} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeHome')}>
@@ -46,3 +47,4 @@ const styles = StyleSheet.create({
 });
 
 export default NavBar;
+
