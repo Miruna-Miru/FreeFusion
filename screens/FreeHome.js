@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, Modal, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, Modal, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import NavBar from './NavBar';
 import Icon from 'react-native-vector-icons/Ionicons'; 
 
-const FreeHome = () => {
-  const userName = "John Doe";
+const FreeHome = ({ route }) => {
+  const { username, email } = route.params;
+  const userName = username || "User"; // Get username from navigation params or default to "User"
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
@@ -48,7 +49,8 @@ const FreeHome = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>  
+    <ScrollView contentContainerStyle={styles.container}> 
+    <NavBar email={email} /> 
       <View style={styles.avatarContainer}>
         <Image
           source={require('../assets/ml.jpg')}
@@ -251,3 +253,4 @@ const styles = StyleSheet.create({
 });
 
 export default FreeHome;
+
