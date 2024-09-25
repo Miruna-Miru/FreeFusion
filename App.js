@@ -11,7 +11,12 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import FreeHome from './screens/FreeHome';
 import FreeProfile from './screens/Freeprofile';
 import FreeSettings from './screens/FreeSettings';
-
+import UiUx from './screens/UiUx';
+import ML from './screens/ML';
+import DS from './screens/DS';
+import Animation from './screens/Animation';
+import FullStack from './screens/FullStack';
+import CustProfile from './screens/CustProfile';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -31,6 +36,7 @@ export default function App() {
   const HomeDrawer = () => (
     <Drawer.Navigator>
       <Drawer.Screen name="Home" component={HomePage} />
+      <Drawer.Screen name="Profile" component={CustProfile}/>
     </Drawer.Navigator>
   );
 
@@ -78,6 +84,31 @@ export default function App() {
            <Stack.Screen
             name="FreeSettings"
             component={FreeSettings}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="UiUx"
+            component={UiUx}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="FullStack"
+            component={FullStack}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Animation"
+            component={Animation}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ML"
+            component={ML}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DS"
+            component={DS}
             options={{ headerShown: false }}
           />
         </>
