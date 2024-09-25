@@ -28,7 +28,7 @@ const HomePage = () => {
   const handleInputChange = (name, value) => setFormData({ ...formData, [name]: value });
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <SearchBar />
       <Text style={styles.headerText}>Explore Top Categories</Text>
       <ScrollView style={styles.cardsScrollView}>
@@ -108,9 +108,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 20,
   },
-  cardsScrollView: {
-    flex: 1,
-  },
   card: {
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
@@ -139,51 +136,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#007bff',
   },
-  addButton: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: 'green',
-    padding: 20,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    width: '80%',
-    alignItems: 'center',
-  },
-  modalHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    width: '100%',
-    borderColor: 'green',
-    borderWidth: 1,
-    borderRadius: 25,
-    padding: 10,
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  sendButton: {
-    backgroundColor: 'green',
-    padding: 10,
-    borderRadius: 25,
-    width: '50%',
-    alignItems: 'center',
-    marginTop: 10,
-  },
 });
 
 export default HomePage;
+

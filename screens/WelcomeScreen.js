@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
-const WelcomeScreen = ({ navigation }) => {
+const WelcomeScreen = ({ navigation, route }) => {
+  const { username } = route.params;
   return (
     <View style={styles.container}>
       <Image source={require('../assets/start.png')} style={styles.image} />
@@ -9,7 +10,7 @@ const WelcomeScreen = ({ navigation }) => {
       <Text style={styles.subtitle}>Connect with clients and showcase your skills.</Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('FreeHome')}
+        onPress={() => navigation.navigate('FreeHome',{username})}
       >
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
@@ -54,3 +55,4 @@ const styles = StyleSheet.create({
 });
 
 export default WelcomeScreen;
+
