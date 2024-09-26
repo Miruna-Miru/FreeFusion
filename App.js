@@ -9,7 +9,7 @@ import SignUpPage from './screens/SignUpPage';
 import SplashScreen from './screens/SplashScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import FreeHome from './screens/FreeHome';
-import FreeProfile from './screens/Freeprofile';
+import NewFreeProfile from './screens/NewFreeProfile'; 
 import FreeSettings from './screens/FreeSettings';
 import UiUx from './screens/UiUx';
 import ML from './screens/ML';
@@ -74,15 +74,15 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="FreeProfile"
-            component={FreeProfile}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
             name="FreeSettings"
             component={FreeSettings}
             options={{ headerShown: false }}
           />
+          <Stack.Screen 
+            name='NewFreeProfile'
+            component={NewFreeProfile}
+            options={{headerShown:false}}
+            />
           <Stack.Screen
             name="UiUx"
             component={UiUx}
