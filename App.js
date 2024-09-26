@@ -11,6 +11,7 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import FreeHome from './screens/FreeHome';
 import NewFreeProfile from './screens/NewFreeProfile'; 
 import FreeSettings from './screens/FreeSettings';
+import FreeProfile from './screens/Freeprofile';
 import UiUx from './screens/UiUx';
 import ML from './screens/ML';
 import DS from './screens/DS';
@@ -76,6 +77,11 @@ export default function App() {
           <Stack.Screen
             name="FreeSettings"
             component={FreeSettings}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="FreeProfile"
+            component={FreeProfile}
             options={{ headerShown: false }}
           />
           <Stack.Screen 

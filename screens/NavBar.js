@@ -6,19 +6,20 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 const NavBar = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const email = route.params;
+
+  const { username, userId} = route.params;
 
   const getColor = (page) => (route.name === page ? 'green' : 'black');
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeSettings', email)}>
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeSettings',{userId})}>
         <Icon name="settings" size={24} color={getColor('FreeSettings')} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeHome')}>
         <Icon name="home" size={24} color={getColor('FreeHome')} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeProfile')}>
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeProfile',{username, userId})}>
         <Icon name="person" size={24} color={getColor('FreeProfile')} />
       </TouchableOpacity>
     </View>

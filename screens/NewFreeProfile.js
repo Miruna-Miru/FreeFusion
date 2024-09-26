@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; 
 import { useNavigation } from '@react-navigation/native';
 import CheckBox from 'react-native-check-box';
+import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebaseconfig'; 
+
 
 const NewFreeProfile = ({ route }) => {
-  const { username, email } = route.params; 
+  const { username, userId} = route.params; 
+  const [email, setEmail] = useState('');
   const [about, setAbout] = useState('');
   const [specialization, setSpecialization] = useState('');
   const [additionalSpecialization, setAdditionalSpecialization] = useState('');
@@ -15,19 +19,56 @@ const NewFreeProfile = ({ route }) => {
 
   const navigation = useNavigation();
 
+  useEffect(() => {
+    const fetchEmail = async () => {
+      try {
+        const docRef = doc(db, 'freelancers', userId); // Document reference
+        const docSnap = await getDoc(docRef); // Get document
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setEmail(data.email); // Set email from Firestore data
+        } else {
+          console.log('No such document!');
+        }
+      } catch (error) {
+        console.error('Error fetching email:', error);
+      }
+    };
+
+    fetchEmail(); // Call the function to fetch email
+  }, [userId]);
+
   const handleSpecializationChange = (value) => {
     setSpecialization(value);
     setIsAdditionalSpecializationVisible(value === 'Other');
   };
 
-  const handleDone = () => {
+  const handleDone = async () => {
     if (!username || !about || !specialization) {
       Alert.alert("Error", "Please fill in all mandatory fields!");
       return;
     }
 
-    Alert.alert("Profile Submitted", `About: ${about}, Specialization: ${specialization} ${isAdditionalSpecializationVisible ? additionalSpecialization : ''}`);
-    navigation.navigate('FreeHome');
+    try {
+      console.log('Trying to update document with UID:', userId); // Ensure UID is logged
+
+      // Use uid to reference the document
+      const userDocRef = doc(db, 'freelancers', userId); 
+
+      // Update the Firestore document
+      await updateDoc(userDocRef, {
+        about,
+        specialization,
+        additionalSpecialization: isAdditionalSpecializationVisible ? additionalSpecialization : null,
+      });
+
+      Alert.alert("Profile Submitted", `About: ${about}, Specialization: ${specialization}`);
+      navigation.navigate('FreeHome', { username, userId });
+    } catch (error) {
+      console.error('Error updating document: ', error);
+      Alert.alert('Error', 'Could not update profile details. Please try again.');
+    }
   };
 
   return (
@@ -78,7 +119,7 @@ const NewFreeProfile = ({ route }) => {
             <Picker.Item label="DevOps" value="DevOps" />
           </Picker>
         )}
-        <Button title="Done" onPress={handleDone}  style={styles.doneButton} />
+        <Button title="Done" onPress={handleDone} style={styles.doneButton} />
       </View>
     </View>
   );
@@ -129,9 +170,9 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 20,
   },
-  doneButton:{
-    color:'green'
-  }
+  doneButton: {
+    color: 'green',
+  },
 });
 
 export default NewFreeProfile;

@@ -1,9 +1,31 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 const WelcomeScreen = ({ navigation, route }) => {
-  const { username, email } = route.params;
+  const { userId } = route.params;
+  const [username, setUsername] = useState('');
+  const db = getFirestore();
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const docRef = doc(db, 'freelancers', userId); // Assuming the user profile is in the 'freelancers' collection
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setUsername(data.username); // Assuming 'username' is the field name
+        } else {
+          console.log('No such document!');
+        }
+      } catch (error) {
+        console.error('Error fetching username:', error);
+      }
+    };
+
+    fetchUsername();
+  }, [userId]);
+
   return (
     <View style={styles.container}>
       <Image source={require('../assets/start.png')} style={styles.image} />
@@ -11,7 +33,7 @@ const WelcomeScreen = ({ navigation, route }) => {
       <Text style={styles.subtitle}>Connect with clients and showcase your skills.</Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('NewFreeProfile', { username ,email})} 
+        onPress={() => navigation.navigate('NewFreeProfile', { username, userId})} 
       >
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>

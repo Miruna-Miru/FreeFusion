@@ -33,7 +33,7 @@ export default function LoginPage({ navigation }) {
         } else if (!freelancerSnapshot.empty) {
           const username = freelancerSnapshot.docs[0].data().username; 
           Alert.alert('Success', 'Freelancer login successful!');
-          navigation.navigate('FreeHome', { username, email }); 
+          navigation.navigate('FreeHome', { username, userId }); 
         } else {
           Alert.alert('Error', 'Login credentials do not match any account type.');
           auth.signOut();
