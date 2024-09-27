@@ -10,21 +10,17 @@ const FreeProfile = ({ route }) => {
   const [about, setAbout] = useState('');
   const [specialization, setSpecialization] = useState('');
   const { username, userId } = route.params;
-  // const userName = "Moon";
   const userLevel = "Top Rated";
   const projectsCompleted = 15; 
   const rating = 4.5;
-  // const aboutUser = "A passionate freelancer with expertise in mobile app development and design."; 
-  // const specialistDomain = "Mobile App Development"; 
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const userDocRef = doc(db, 'freelancers', userId); // Reference to the user document
-        const userDoc = await getDoc(userDocRef); // Fetch the document
+        const userDocRef = doc(db, 'freelancers', userId); 
+        const userDoc = await getDoc(userDocRef); 
 
         if (userDoc.exists()) {
-          // Set the about and specialization from the document data
           setAbout(userDoc.data().about);
           setSpecialization(userDoc.data().specialization);
         } else {
@@ -36,8 +32,8 @@ const FreeProfile = ({ route }) => {
       }
     };
 
-    fetchUserProfile(); // Call the function to fetch the data
-  }, [userId]); // Run this effect when userId changes
+    fetchUserProfile(); 
+  }, [userId]); 
 
   const renderStars = (rating) => {
     let stars = [];

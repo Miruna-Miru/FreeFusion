@@ -22,12 +22,11 @@ const NewFreeProfile = ({ route }) => {
   useEffect(() => {
     const fetchEmail = async () => {
       try {
-        const docRef = doc(db, 'freelancers', userId); // Document reference
-        const docSnap = await getDoc(docRef); // Get document
+        const docRef = doc(db, 'freelancers', userId); 
+        const docSnap = await getDoc(docRef); 
 
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setEmail(data.email); // Set email from Firestore data
         } else {
           console.log('No such document!');
         }
@@ -36,7 +35,7 @@ const NewFreeProfile = ({ route }) => {
       }
     };
 
-    fetchEmail(); // Call the function to fetch email
+    fetchEmail(); 
   }, [userId]);
 
   const handleSpecializationChange = (value) => {
@@ -51,12 +50,10 @@ const NewFreeProfile = ({ route }) => {
     }
 
     try {
-      console.log('Trying to update document with UID:', userId); // Ensure UID is logged
+      console.log('Trying to update document with UID:', userId); 
 
-      // Use uid to reference the document
       const userDocRef = doc(db, 'freelancers', userId); 
 
-      // Update the Firestore document
       await updateDoc(userDocRef, {
         about,
         specialization,

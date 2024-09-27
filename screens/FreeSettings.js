@@ -15,12 +15,12 @@ const FreeSettings = () => {
   useEffect(() => {
     const fetchEmail = async () => {
       try {
-        const docRef = doc(db, 'freelancers', userId); // Adjust the collection name if needed
+        const docRef = doc(db, 'freelancers', userId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
           const userData = docSnap.data();
-          setEmail(userData.email); // Assuming your Firestore document has an 'email' field
+          setEmail(userData.email); 
         } else {
           console.log('No such document!');
         }
@@ -30,7 +30,7 @@ const FreeSettings = () => {
     };
 
     fetchEmail();
-  }, [userId]); // Dependency array ensures this runs when userId changes
+  }, [userId]); 
 
   const handleLogout = () => {
     Alert.alert(
