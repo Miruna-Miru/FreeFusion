@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 
 import { Picker } from '@react-native-picker/picker';
 import { auth, db } from '../firebaseconfig'; 
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { collection, addDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const SignUp = ({ navigation }) => {
@@ -29,15 +29,15 @@ const SignUp = ({ navigation }) => {
           address,
         };
         const collectionName = activeTab === 'Customer' ? 'customers' : 'freelancers';
-        await addDoc(collection(db, collectionName), {
+        await setDoc(doc(db, collectionName, userId), {
           ...userData,
           uid: userId, 
         });
         alert('Sign up successful!');
         if (activeTab === 'Customer') {
-          navigation.navigate('Home', { username, email, address });
+          navigation.navigate('Home', { userId });
         } else {
-          navigation.navigate('WelcomeScreen', { username, email, address }); 
+          navigation.navigate('WelcomeScreen', { userId }); 
         }
       } catch (error) {
         console.error('Error during sign-up: ', error);

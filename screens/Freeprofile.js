@@ -1,17 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavBar from './NavBar';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebaseconfig';
 
-const FreeProfile = () => {
+const FreeProfile = ({ route }) => {
   const [isEditing, setIsEditing] = useState(false);
-
-  const userName = "Moon";
+  const [about, setAbout] = useState('');
+  const [specialization, setSpecialization] = useState('');
+  const { username, userId } = route.params;
   const userLevel = "Top Rated";
   const projectsCompleted = 15; 
   const rating = 4.5;
-  const aboutUser = "A passionate freelancer with expertise in mobile app development and design."; 
-  const specialistDomain = "Mobile App Development"; 
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const userDocRef = doc(db, 'freelancers', userId); 
+        const userDoc = await getDoc(userDocRef); 
+
+        if (userDoc.exists()) {
+          setAbout(userDoc.data().about);
+          setSpecialization(userDoc.data().specialization);
+        } else {
+          Alert.alert("Error", "User profile not found!");
+        }
+      } catch (error) {
+        console.error("Error fetching user profile: ", error);
+        Alert.alert("Error", "Could not fetch user profile details.");
+      }
+    };
+
+    fetchUserProfile(); 
+  }, [userId]); 
 
   const renderStars = (rating) => {
     let stars = [];
@@ -44,21 +66,21 @@ const FreeProfile = () => {
             <Icon name="edit" size={24} color="gray" />
           </TouchableOpacity>
         </View>
-        <Text style={styles.greeting}>Hi {userName},</Text>
+        <Text style={styles.greeting}>Hi {username},</Text>
         <Text style={styles.welcomeBack}>Welcome back</Text>
       </View>
 
       <View style={styles.aboutBox}>
         <View style={styles.aboutContent}>
           <Text style={styles.statTitle}>About</Text>
-          <Text style={styles.aboutText}>{aboutUser}</Text>
+          <Text style={styles.aboutText}>{about}</Text>
         </View>
       </View>
 
       <View style={styles.specialistBox}>
         <View style={styles.specialistContent}>
           <Text style={styles.statTitle}>Specialist in</Text>
-          <Text style={styles.specialistText}>{specialistDomain}</Text>
+          <Text style={styles.specialistText}>{specialization}</Text>
         </View>
       </View>
 

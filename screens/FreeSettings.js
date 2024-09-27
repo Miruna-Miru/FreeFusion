@@ -1,13 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import NavBar from './NavBar';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebaseconfig';
 
 const FreeSettings = () => {
   const navigation = useNavigation();
   const route = useRoute(); 
-  const { email } = route.params; 
+  const { userId } = route.params;
+  const [email, setEmail] = useState(''); 
+
+  useEffect(() => {
+    const fetchEmail = async () => {
+      try {
+        const docRef = doc(db, 'freelancers', userId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          setEmail(userData.email); 
+        } else {
+          console.log('No such document!');
+        }
+      } catch (error) {
+        console.error("Error fetching email: ", error);
+      }
+    };
+
+    fetchEmail();
+  }, [userId]); 
 
   const handleLogout = () => {
     Alert.alert(
@@ -124,4 +147,3 @@ const styles = StyleSheet.create({
 });
 
 export default FreeSettings;
-

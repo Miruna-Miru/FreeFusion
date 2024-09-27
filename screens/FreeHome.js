@@ -5,9 +5,7 @@ import NavBar from './NavBar';
 import Icon from 'react-native-vector-icons/Ionicons'; 
 
 const FreeHome = ({ route }) => {
-  // Ensure route.params is defined
-  const { username = "User", email = "user@example.com" } = route?.params || {};
-
+  const { username, userId } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
@@ -51,7 +49,8 @@ const FreeHome = ({ route }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}> 
-      <NavBar email={email} /> 
+      <NavBar username={username} 
+              userId={userId}  /> 
       <View style={styles.avatarContainer}>
         <Image
           source={require('../assets/ml.jpg')}
@@ -177,7 +176,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     width: '90%',
     marginTop: 10,  
-    marginBottom: 20,
+    marginBottom: 30,
   },
   card: {
     backgroundColor: '#fff',
