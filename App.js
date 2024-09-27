@@ -17,6 +17,7 @@ import DS from './screens/DS';
 import Animation from './screens/Animation';
 import FullStack from './screens/FullStack';
 import CustProfile from './screens/CustProfile';
+import FreeProfile from './screens/Freeprofile';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -106,6 +107,11 @@ export default function App() {
           <Stack.Screen
             name="DS"
             component={DS}
+            options={{ headerShown: false }}
+          />
+           <Stack.Screen
+            name="FreeProfile"
+            component={FreeProfile}
             options={{ headerShown: false }}
           />
         </>
