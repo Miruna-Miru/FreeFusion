@@ -5,8 +5,6 @@ import NavBar from './NavBar';
 import Icon from 'react-native-vector-icons/Ionicons'; 
 
 const FreeHome = ({ route }) => {
-  // Ensure route.params is defined
-  // const { username = "User", email = "user@example.com" } = route?.params || {};
   const { username, userId } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);

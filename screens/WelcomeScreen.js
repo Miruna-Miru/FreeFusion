@@ -10,11 +10,11 @@ const WelcomeScreen = ({ navigation, route }) => {
   useEffect(() => {
     const fetchUsername = async () => {
       try {
-        const docRef = doc(db, 'freelancers', userId); // Assuming the user profile is in the 'freelancers' collection
+        const docRef = doc(db, 'freelancers', userId); 
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setUsername(data.username); // Assuming 'username' is the field name
+          setUsername(data.username); 
         } else {
           console.log('No such document!');
         }

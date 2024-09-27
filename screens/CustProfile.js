@@ -1,15 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons"; 
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebaseconfig'; 
 
-export default function CustProfile({ navigation }) {
+export default function CustProfile({ navigation, route }) {
+    const { userId } = route.params; 
     const [isEditing, setIsEditing] = useState(false);
-    const [username, setUsername] = useState("JohnDoe");
-    const [email, setEmail] = useState("john.doe@example.com");
-    const [address, setAddress] = useState("123 Main St, City, Country");
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [address, setAddress] = useState("");
 
-    const handleEditToggle = () => {
-        setIsEditing(!isEditing);
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                const userDocRef = doc(db, 'customers', userId);
+                const userDoc = await getDoc(userDocRef);
+
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    setUsername(userData.username || "");
+                    setEmail(userData.email || "");
+                    setAddress(userData.address || "");
+                } else {
+                    console.log('User does not exist in the database');
+                }
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+            }
+        };
+
+        fetchUserProfile();
+    }, [userId]);
+
+    const handleEditToggle = async () => {
+        if (isEditing) {
+            try {
+                const userDocRef = doc(db, 'customers', userId);
+                await updateDoc(userDocRef, {
+                    username: username,
+                    email: email,
+                    address: address,
+                });
+                console.log('Profile updated successfully!');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+            }
+        }
+        setIsEditing(!isEditing); 
     };
 
     const handleDeleteAccount = () => {
@@ -23,7 +61,7 @@ export default function CustProfile({ navigation }) {
                 },
                 {
                     text: "OK",
-                    onPress: () => navigation.navigate("SignUp"), 
+                    onPress: () => navigation.navigate("SignUp"),
                 },
             ],
             { cancelable: false }
@@ -31,7 +69,7 @@ export default function CustProfile({ navigation }) {
     };
 
     const handleNavigateHome = () => {
-        navigation.navigate('HomePage', { companyName: 'Your Company Name', contactInfo: '123-456-7890' });
+        navigation.navigate('Home',{userId});
     };
 
     return (
