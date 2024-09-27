@@ -19,7 +19,7 @@ import Animation from './screens/Animation';
 import FullStack from './screens/FullStack';
 import CustProfile from './screens/CustProfile';
 import { auth } from './firebaseconfig';
-import FreeProfile from './screens/Freeprofile';
+
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
