@@ -47,12 +47,12 @@ const FreeHome = ({ route }) => {
 
   const handleSendPress = async () => {
     if (selectedProject) {
-      const email = selectedProject.contactInfo; // Assuming this field contains the email
+      const email = selectedProject.contactInfo; 
       const subject = `Inquiry about ${selectedProject.projectTitle}`;
       const body = `Hello,\n\nI am interested in the project "${selectedProject.projectTitle}".\n\nThank you!`;
       const mailUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
-      // Open email client
+      
       await Linking.openURL(mailUrl);
     }
   };
@@ -87,11 +87,11 @@ const FreeHome = ({ route }) => {
 
       <ScrollView style={styles.cardContainer}> 
   {loading ? (
-    <Text>Loading...</Text> // Show loading indicator
+    <Text>Loading...</Text> 
   ) : error ? (
-    <Text>Error fetching projects</Text> // Show error message
+    <Text>Error fetching projects</Text> 
   ) : projectCards.length === 0 ? (
-    <Text>No projects available</Text> // Show when no documents
+    <Text>No projects available</Text> 
   ) : (
     projectCards.map((project) => (
       <TouchableOpacity key={project.id} onPress={() => handleCardPress(project)} style={styles.card}>
