@@ -8,7 +8,7 @@ import { doc, setDoc } from 'firebase/firestore';
 const HomePage = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const userId = route.params?.userId; // Get the user ID from navigation params
+  const userId = route.params?.userId;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState({
     companyName: '',
@@ -20,7 +20,6 @@ const HomePage = () => {
   });
 
   useEffect(() => {
-    // Get current user's email and set it as the default contactInfo
     const currentUser = auth.currentUser;
     if (currentUser && currentUser.email) {
       setFormData((prevData) => ({
@@ -45,17 +44,14 @@ const HomePage = () => {
   const handleSend = async () => {
     if (userId && formData.projectTitle && formData.description && formData.salary) {
       try {
-        // Generate a new document reference with a unique ID
-        const requestRef = doc(db, 'customer_requests', 'requestId' + Date.now()); // Using a timestamp as unique ID
+        const requestRef = doc(db, 'customer_requests', 'requestId' + Date.now()); 
 
-        // Add data to Firestore collection "customer_requests"
         await setDoc(requestRef, {
-          userId: userId, // Add userId to the document
+          userId: userId,
           ...formData,
           createdAt: new Date(),
         });
 
-        // Close the modal after submission
         toggleModal();
       } catch (error) {
         console.error("Error saving request: ", error);
@@ -124,8 +120,8 @@ const HomePage = () => {
             <TextInput
               style={styles.input}
               placeholder="Contact Info"
-              value={formData.contactInfo} // This will already be pre-filled with user's email
-              editable={false} // Make the input field uneditable
+              value={formData.contactInfo} 
+              editable={false} 
             />
             <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
               <Icon name="send" size={24} color="white" />

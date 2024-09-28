@@ -10,8 +10,8 @@ const FreeHome = ({ route }) => {
   const { username, userId } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [projectCards, setProjectCards] = useState([]); // State for storing fetched projects
-  const [loading, setLoading] = useState(true); // State for loading indicator
+  const [projectCards, setProjectCards] = useState([]); 
+  const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
 
   const carouselItems = [
@@ -28,7 +28,7 @@ const FreeHome = ({ route }) => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'customer_requests'));
+        const querySnapshot = await getDocs(collection(db, 'customer_requests')); 
         const requests = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(), 
@@ -52,7 +52,10 @@ const FreeHome = ({ route }) => {
       const body = `Hello,\n\nI am interested in the project "${selectedProject.projectTitle}".\n\nThank you!`;
       const mailUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
+<<<<<<< HEAD
       
+=======
+>>>>>>> 79869b2a2878f638ede3967900aa04dc6dc50d45
       await Linking.openURL(mailUrl);
     }
   };
@@ -87,7 +90,11 @@ const FreeHome = ({ route }) => {
 
       <ScrollView style={styles.cardContainer}> 
   {loading ? (
+<<<<<<< HEAD
     <Text>Loading...</Text> 
+=======
+    <Text>Loading...</Text>
+>>>>>>> 79869b2a2878f638ede3967900aa04dc6dc50d45
   ) : error ? (
     <Text>Error fetching projects</Text> 
   ) : projectCards.length === 0 ? (
