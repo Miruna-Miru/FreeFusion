@@ -16,10 +16,10 @@ const NavBar = () => {
       <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeSettings',{userId})}>
         <Icon name="settings" size={24} color={getColor('FreeSettings')} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeHome')}>
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeHome',{userId})}>
         <Icon name="home" size={24} color={getColor('FreeHome')} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeProfile',{username, userId})}>
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FreeProfile',{ username, userId})}>
         <Icon name="person" size={24} color={getColor('FreeProfile')} />
       </TouchableOpacity>
     </View>

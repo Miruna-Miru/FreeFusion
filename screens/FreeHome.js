@@ -10,8 +10,8 @@ const FreeHome = ({ route }) => {
   const { username, userId } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [projectCards, setProjectCards] = useState([]); // State for storing fetched projects
-  const [loading, setLoading] = useState(true); // State for loading indicator
+  const [projectCards, setProjectCards] = useState([]); 
+  const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
 
   const carouselItems = [
@@ -28,17 +28,17 @@ const FreeHome = ({ route }) => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'customer_requests')); // Fetch documents
+        const querySnapshot = await getDocs(collection(db, 'customer_requests')); 
         const requests = querySnapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data(), // Spread the document data
+          ...doc.data(), 
         }));
-        setProjectCards(requests); // Set the state with fetched data
+        setProjectCards(requests); 
       } catch (err) {
         console.error("Error fetching requests: ", err);
-        setError(err); // Set error state if any
+        setError(err); 
       } finally {
-        setLoading(false); // Set loading to false once done
+        setLoading(false); 
       }
     };
 
@@ -47,12 +47,11 @@ const FreeHome = ({ route }) => {
 
   const handleSendPress = async () => {
     if (selectedProject) {
-      const email = selectedProject.contactInfo; // Assuming this field contains the email
+      const email = selectedProject.contactInfo; 
       const subject = `Inquiry about ${selectedProject.projectTitle}`;
       const body = `Hello,\n\nI am interested in the project "${selectedProject.projectTitle}".\n\nThank you!`;
       const mailUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
-      // Open email client
       await Linking.openURL(mailUrl);
     }
   };
@@ -87,11 +86,11 @@ const FreeHome = ({ route }) => {
 
       <ScrollView style={styles.cardContainer}> 
   {loading ? (
-    <Text>Loading...</Text> // Show loading indicator
+    <Text>Loading...</Text>
   ) : error ? (
-    <Text>Error fetching projects</Text> // Show error message
+    <Text>Error fetching projects</Text> 
   ) : projectCards.length === 0 ? (
-    <Text>No projects available</Text> // Show when no documents
+    <Text>No projects available</Text> 
   ) : (
     projectCards.map((project) => (
       <TouchableOpacity key={project.id} onPress={() => handleCardPress(project)} style={styles.card}>
