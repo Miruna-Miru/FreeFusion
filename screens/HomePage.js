@@ -1,19 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput, Modal, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { db, auth } from '../firebaseconfig'; 
+import { doc, setDoc } from 'firebase/firestore';
 
 const HomePage = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { companyName, contactInfo } = route.params || {};
+  const userId = route.params?.userId; // Get the user ID from navigation params
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState({
+    companyName: '',
     projectTitle: '',
     description: '',
     duration: '',
     salary: '',
+    contactInfo: '',
   });
+
+  useEffect(() => {
+    // Get current user's email and set it as the default contactInfo
+    const currentUser = auth.currentUser;
+    if (currentUser && currentUser.email) {
+      setFormData((prevData) => ({
+        ...prevData,
+        contactInfo: currentUser.email,
+      }));
+    }
+  }, []);
 
   const categories = [
     { id: 1, title: 'UI UX design', image: require('../assets/back.jpg'), screen: 'UiUx' },
@@ -24,7 +39,31 @@ const HomePage = () => {
   ];
 
   const toggleModal = () => setIsModalVisible(!isModalVisible);
+  
   const handleInputChange = (name, value) => setFormData({ ...formData, [name]: value });
+
+  const handleSend = async () => {
+    if (userId && formData.projectTitle && formData.description && formData.salary) {
+      try {
+        // Generate a new document reference with a unique ID
+        const requestRef = doc(db, 'customer_requests', 'requestId' + Date.now()); // Using a timestamp as unique ID
+
+        // Add data to Firestore collection "customer_requests"
+        await setDoc(requestRef, {
+          userId: userId, // Add userId to the document
+          ...formData,
+          createdAt: new Date(),
+        });
+
+        // Close the modal after submission
+        toggleModal();
+      } catch (error) {
+        console.error("Error saving request: ", error);
+      }
+    } else {
+      console.log('Please fill in all required fields');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -48,12 +87,15 @@ const HomePage = () => {
       <Modal visible={isModalVisible} animationType="slide" transparent={true}>
         <KeyboardAvoidingView style={styles.modalContainer} behavior={Platform.OS === 'ios' ? 'padding' : null}>
           <View style={styles.modalContent}>
+            <TouchableOpacity style={styles.closeButton} onPress={toggleModal}>
+              <Icon name="times" size={24} color="black" />
+            </TouchableOpacity>
             <Text style={styles.modalHeader}>New Project</Text>
             <TextInput
               style={styles.input}
               placeholder="Company Name"
-              value={companyName}
-              editable={false}
+              value={formData.companyName}
+              onChangeText={(value) => handleInputChange('companyName', value)}
             />
             <TextInput
               style={styles.input}
@@ -82,10 +124,10 @@ const HomePage = () => {
             <TextInput
               style={styles.input}
               placeholder="Contact Info"
-              value={contactInfo}
-              editable={false}
+              value={formData.contactInfo} // This will already be pre-filled with user's email
+              editable={false} // Make the input field uneditable
             />
-            <TouchableOpacity style={styles.sendButton} onPress={toggleModal}>
+            <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
               <Icon name="send" size={24} color="white" />
             </TouchableOpacity>
           </View>
@@ -181,6 +223,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     marginTop: 10,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1, // Ensure the button is on top of other content
   },
 });
 

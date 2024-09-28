@@ -35,7 +35,7 @@ const SignUp = ({ navigation }) => {
         });
         alert('Sign up successful!');
         if (activeTab === 'Customer') {
-          navigation.navigate('Home', { userId });
+          navigation.navigate('HomePage', { userId });
         } else {
           navigation.navigate('WelcomeScreen', { userId }); 
         }
