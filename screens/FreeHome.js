@@ -28,17 +28,17 @@ const FreeHome = ({ route }) => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'customer_requests')); // Fetch documents
+        const querySnapshot = await getDocs(collection(db, 'customer_requests'));
         const requests = querySnapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data(), // Spread the document data
+          ...doc.data(), 
         }));
-        setProjectCards(requests); // Set the state with fetched data
+        setProjectCards(requests); 
       } catch (err) {
         console.error("Error fetching requests: ", err);
-        setError(err); // Set error state if any
+        setError(err); 
       } finally {
-        setLoading(false); // Set loading to false once done
+        setLoading(false); 
       }
     };
 
