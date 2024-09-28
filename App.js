@@ -133,11 +133,7 @@ export default function App() {
             component={DS}
             options={{ headerShown: false }}
           />
-           <Stack.Screen
-            name="FreeProfile"
-            component={FreeProfile}
-            options={{ headerShown: false }}
-          />
+          
         </>
       )}
     </Stack.Navigator>
