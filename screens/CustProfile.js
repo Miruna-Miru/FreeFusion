@@ -69,7 +69,7 @@ export default function CustProfile({ navigation, route }) {
     };
 
     const handleNavigateHome = () => {
-        navigation.navigate('Home',{userId});
+        navigation.navigate('HomePage',{userId});
     };
 
     return (

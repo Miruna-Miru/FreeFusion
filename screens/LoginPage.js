@@ -29,7 +29,7 @@ export default function LoginPage({ navigation }) {
         if (!customerSnapshot.empty) {
           const username = customerSnapshot.docs[0].data().username; 
           Alert.alert('Success', 'Customer login successful!');
-          navigation.navigate('Home');
+          navigation.navigate('HomePage');
         } else if (!freelancerSnapshot.empty) {
           const username = freelancerSnapshot.docs[0].data().username; 
           Alert.alert('Success', 'Freelancer login successful!');

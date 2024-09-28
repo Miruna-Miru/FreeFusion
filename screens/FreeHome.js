@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, Modal, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, Modal, TouchableOpacity, ScrollView, Linking } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import NavBar from './NavBar';
 import Icon from 'react-native-vector-icons/Ionicons'; 
+import { db } from '../firebaseconfig'; 
+import { collection, getDocs } from 'firebase/firestore'; 
 
 const FreeHome = ({ route }) => {
   const { username, userId } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [projectCards, setProjectCards] = useState([]); // State for storing fetched projects
+  const [loading, setLoading] = useState(true); // State for loading indicator
+  const [error, setError] = useState(null);
 
   const carouselItems = [
     { id: 1, text: "Project 1", image: require('../assets/ml.jpg') },
@@ -15,42 +20,46 @@ const FreeHome = ({ route }) => {
     { id: 3, text: "Project 3", image: require('../assets/data.jpg') },
   ];
 
-  const projectCards = [
-    {
-      id: 1,
-      title: "Web Development Project",
-      description: "Looking for a full-stack developer to build a responsive website.",
-      company: "Tech Solutions",
-      salary: "$70,000",
-      duration: "6 months",
-    },
-    {
-      id: 2,
-      title: "Mobile App Development",
-      description: "Need an expert to create an iOS and Android application.",
-      company: "App Creators Inc.",
-      salary: "$90,000",
-      duration: "1 year",
-    },
-    {
-      id: 3,
-      title: "UI/UX Design Project",
-      description: "Seeking a designer to enhance user experience for our application.",
-      company: "Creative Designs",
-      salary: "$60,000",
-      duration: "3 months",
-    },
-  ];
-
   const handleCardPress = (project) => {
     setSelectedProject(project);
     setModalVisible(true);
   };
 
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'customer_requests')); // Fetch documents
+        const requests = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(), // Spread the document data
+        }));
+        setProjectCards(requests); // Set the state with fetched data
+      } catch (err) {
+        console.error("Error fetching requests: ", err);
+        setError(err); // Set error state if any
+      } finally {
+        setLoading(false); // Set loading to false once done
+      }
+    };
+
+    fetchRequests();
+  }, []);
+
+  const handleSendPress = async () => {
+    if (selectedProject) {
+      const email = selectedProject.contactInfo; // Assuming this field contains the email
+      const subject = `Inquiry about ${selectedProject.projectTitle}`;
+      const body = `Hello,\n\nI am interested in the project "${selectedProject.projectTitle}".\n\nThank you!`;
+      const mailUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+      // Open email client
+      await Linking.openURL(mailUrl);
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}> 
-      <NavBar username={username} 
-              userId={userId}  /> 
+      <NavBar username={username} userId={userId} /> 
       <View style={styles.avatarContainer}>
         <Image
           source={require('../assets/ml.jpg')}
@@ -77,14 +86,22 @@ const FreeHome = ({ route }) => {
       </View>
 
       <ScrollView style={styles.cardContainer}> 
-        {projectCards.map((project) => (
-          <TouchableOpacity key={project.id} onPress={() => handleCardPress(project)} style={styles.card}>
-            <Text style={styles.cardTitle}>{project.title}</Text>
-            <View style={styles.divider} />
-            <Text style={styles.cardDescription}>{project.description}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+  {loading ? (
+    <Text>Loading...</Text> // Show loading indicator
+  ) : error ? (
+    <Text>Error fetching projects</Text> // Show error message
+  ) : projectCards.length === 0 ? (
+    <Text>No projects available</Text> // Show when no documents
+  ) : (
+    projectCards.map((project) => (
+      <TouchableOpacity key={project.id} onPress={() => handleCardPress(project)} style={styles.card}>
+        <Text style={styles.cardTitle}>{project.projectTitle}</Text>
+        <View style={styles.divider} />
+        <Text style={styles.cardDescription}>{project.description}</Text>
+      </TouchableOpacity>
+    ))
+  )}
+</ScrollView>
 
       <Modal
         animationType="slide"
@@ -95,17 +112,17 @@ const FreeHome = ({ route }) => {
         <View style={styles.modalContainer}>
           {selectedProject && (
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>{selectedProject.title}</Text>
+              <Text style={styles.modalTitle}>{selectedProject.projectTitle}</Text>
               <Text style={styles.modalDescription}>{selectedProject.description}</Text>
               <View style={styles.modalDetails}>
-                <Text style={styles.modalDetail}>Company: {selectedProject.company}</Text>
+                <Text style={styles.modalDetail}>Company: {selectedProject.companyName}</Text>
                 <Text style={styles.modalDetail}>Salary: {selectedProject.salary}</Text>
                 <Text style={styles.modalDetail}>Duration: {selectedProject.duration}</Text>
               </View>
               <View style={styles.modalButtons}>
-                <TouchableOpacity style={styles.iconButton} onPress={() => alert('Send button pressed')}>
-                  <Icon name="send" size={24} color="white" />
-                </TouchableOpacity>
+              <TouchableOpacity style={styles.iconButton} onPress={handleSendPress}>
+              <Icon name="send" size={24} color="white" />
+              </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton} onPress={() => setModalVisible(false)}>
                   <Icon name="close" size={24} color="white" />
                 </TouchableOpacity>
