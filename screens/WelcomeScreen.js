@@ -1,7 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
-const WelcomeScreen = ({ navigation }) => {
+const WelcomeScreen = ({ navigation, route }) => {
+  const { userId } = route.params;
+  const [username, setUsername] = useState('');
+  const db = getFirestore();
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const docRef = doc(db, 'freelancers', userId); 
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setUsername(data.username); 
+        } else {
+          console.log('No such document!');
+        }
+      } catch (error) {
+        console.error('Error fetching username:', error);
+      }
+    };
+
+    fetchUsername();
+  }, [userId]);
+
   return (
     <View style={styles.container}>
       <Image source={require('../assets/start.png')} style={styles.image} />
@@ -9,7 +33,7 @@ const WelcomeScreen = ({ navigation }) => {
       <Text style={styles.subtitle}>Connect with clients and showcase your skills.</Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('FreeHome')}
+        onPress={() => navigation.navigate('NewFreeProfile', { username, userId})} 
       >
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>

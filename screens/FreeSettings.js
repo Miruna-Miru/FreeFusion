@@ -1,18 +1,36 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Switch, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import NavBar from './NavBar';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebaseconfig';
 
 const FreeSettings = () => {
-  const [isEditingEmail, setIsEditingEmail] = useState(false);
-  const [email, setEmail] = useState("moon@example.com");
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
   const navigation = useNavigation();
+  const route = useRoute(); 
+  const { userId } = route.params;
+  const [email, setEmail] = useState(''); 
 
-  const handleEmailEdit = () => {
-    setIsEditingEmail(!isEditingEmail);
-  };
+  useEffect(() => {
+    const fetchEmail = async () => {
+      try {
+        const docRef = doc(db, 'freelancers', userId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          setEmail(userData.email); 
+        } else {
+          console.log('No such document!');
+        }
+      } catch (error) {
+        console.error("Error fetching email: ", error);
+      }
+    };
+
+    fetchEmail();
+  }, [userId]); 
 
   const handleLogout = () => {
     Alert.alert(
@@ -50,56 +68,25 @@ const FreeSettings = () => {
     );
   };
 
-  const toggleTheme = () => {
-    setIsDarkTheme(!isDarkTheme);
-  };
-
   const handleBackPress = () => {
     navigation.goBack();
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: isDarkTheme ? '#1c1c1c' : '#fff' }]}>
-      
+    <View style={styles.container}>
       <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-        <Icon name="arrow-back" size={28} color={isDarkTheme ? 'white' : 'black'} />
+        <Icon name="arrow-back" size={28} color="black" />
       </TouchableOpacity>
 
       <View style={styles.section}>
-        <Text style={[styles.label, { color: isDarkTheme ? 'white' : 'black' }]}>Email</Text>
-        {isEditingEmail ? (
-          <TextInput
-            style={[styles.input, { backgroundColor: isDarkTheme ? '#333' : '#f8f8f8', color: isDarkTheme ? 'white' : 'black' }]}
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-          />
-        ) : (
-          <Text style={[styles.value, { color: isDarkTheme ? 'white' : 'black' }]}>{email}</Text>
-        )}
-        <TouchableOpacity onPress={handleEmailEdit} style={styles.editButton}>
-          <Icon name={isEditingEmail ? "check" : "edit"} size={24} color={isDarkTheme ? 'white' : 'black'} />
-        </TouchableOpacity>
+        <Text style={styles.label}>Email</Text>
+        <Text style={styles.value}>{email}</Text>
       </View>
 
-      <View style={styles.section}>
-        <Text style={[styles.label, { color: isDarkTheme ? 'white' : 'black' }]}>Dark Theme</Text>
-        <Switch
-          value={isDarkTheme}
-          onValueChange={toggleTheme}
-          thumbColor={isDarkTheme ? '#fff' : '#333'}
-        />
-      </View>
-
-      <View style={styles.section}>
-        <TouchableOpacity onPress={handleRemoveAccount} style={styles.removeAccountButton}>
-          <Text style={[styles.removeAccountText, { color: isDarkTheme ? 'white' : 'black' }]}>
-            Delete Account
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleRemoveAccount}>
-          <Icon name="delete" size={28} color="#ff4444" />
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={handleRemoveAccount} style={styles.removeAccountButton}>
+        <Text style={styles.removeAccountText}>Delete Account</Text>
+        <Icon name="delete" size={28} color="#ff4444" />
+      </TouchableOpacity>
 
       <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
         <Text style={styles.logoutText}>Logout</Text>
@@ -114,7 +101,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 80, 
+    paddingTop: 80,
   },
   section: {
     marginBottom: 20,
@@ -127,15 +114,6 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 16,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    padding: 10,
-    borderRadius: 8,
-  },
-  editButton: {
-    marginLeft: 10,
   },
   logoutButton: {
     marginTop: 30,

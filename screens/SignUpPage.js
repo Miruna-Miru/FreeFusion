@@ -1,24 +1,47 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; 
-import Icon from 'react-native-vector-icons/MaterialIcons'; 
+import { Picker } from '@react-native-picker/picker';
+import { auth, db } from '../firebaseconfig'; 
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const SignUp = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState('Customer'); 
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setE_mail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('Company');
   const [address, setAddress] = useState('');
   const [showPassword, setShowPassword] = useState(false); 
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (phoneNumber.length === 10 && username && password) {
-     
-      if (activeTab === 'Freelancer') {
-        navigation.navigate('WelcomeScreen'); 
-      } else {
-        navigation.navigate('Home'); 
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const userId = userCredential.user.uid; 
+        const userData = {
+          email,
+          username,
+          phoneNumber,
+          role,
+          address,
+        };
+        const collectionName = activeTab === 'Customer' ? 'customers' : 'freelancers';
+        await setDoc(doc(db, collectionName, userId), {
+          ...userData,
+          uid: userId, 
+        });
+        alert('Sign up successful!');
+        if (activeTab === 'Customer') {
+          navigation.navigate('Home', { userId });
+        } else {
+          navigation.navigate('WelcomeScreen', { userId }); 
+        }
+      } catch (error) {
+        console.error('Error during sign-up: ', error);
+        alert('Error during sign-up: ' + error.message);
       }
     } else {
       alert('Please enter valid credentials. Phone number should be 10 digits.');
@@ -28,7 +51,6 @@ const SignUp = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
-      
       <View style={styles.tabContainer}>
         <TouchableOpacity 
           style={[styles.tab, activeTab === 'Customer' && styles.activeTab]}
@@ -45,7 +67,6 @@ const SignUp = ({ navigation }) => {
           {activeTab === 'Freelancer' && <View style={styles.underline} />}
         </TouchableOpacity>
       </View>
-
       {activeTab === 'Customer' && (
         <>
           <Picker
@@ -58,7 +79,6 @@ const SignUp = ({ navigation }) => {
             <Picker.Item label="Individual" value="Individual" />
             <Picker.Item label="Business" value="Business" />
           </Picker>
-          
           <TextInput
             placeholder="Address"
             style={styles.input}
@@ -67,23 +87,27 @@ const SignUp = ({ navigation }) => {
           />
         </>
       )}
-
       <TextInput
         placeholder="Phone Number"
         style={styles.input}
         keyboardType="phone-pad"
-        maxLength={10} 
+        maxLength={10}
         value={phoneNumber}
         onChangeText={setPhoneNumber}
       />
-
+      <TextInput
+        placeholder="E-mail ID"
+        style={styles.input}
+        keyboardType="default"
+        onChangeText={(text) => setE_mail(text)}
+        value={email}
+      />
       <TextInput
         placeholder="Username"
         style={styles.input}
         value={username}
         onChangeText={setUsername}
       />
-
       <View style={styles.passwordContainer}>
         <TextInput
           placeholder="Password"
@@ -99,17 +123,16 @@ const SignUp = ({ navigation }) => {
           <Icon name={showPassword ? 'visibility-off' : 'visibility'} size={20} color="gray" />
         </TouchableOpacity>
       </View>
-
       <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
         <Text style={styles.signUpButtonText}>Sign Up as {activeTab}</Text>
       </TouchableOpacity>
-
       <TouchableOpacity onPress={() => navigation.navigate('Login')}>
         <Text style={styles.loginLink}>Already have an account? Login</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -179,7 +202,7 @@ const styles = StyleSheet.create({
   signUpButton: {
     backgroundColor: 'green',
     padding: 15,
-    borderRadius: 20,
+    borderRadius: 20, 
     alignItems: 'center',
     marginTop: 20,
   },

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput, Modal, KeyboardAvoidingView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import SearchBar from '../components/SearchBar';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput, Modal, KeyboardAvoidingView, Platform } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const HomePage = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { companyName, contactInfo } = route.params || {};
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState({
     projectTitle: '',
@@ -14,30 +15,21 @@ const HomePage = () => {
     salary: '',
   });
 
-  const companyInfo = {
-    companyName: 'Acme Corp',
-    contactInfo: '123-456-7890',
-  };
-
   const categories = [
     { id: 1, title: 'UI UX design', image: require('../assets/back.jpg'), screen: 'UiUx' },
     { id: 2, title: 'Animation', image: require('../assets/front.jpg'), screen: 'Animation' },
     { id: 3, title: 'Fullstack Developer', image: require('../assets/uiux.jpg'), screen: 'FullStack' },
     { id: 4, title: 'Machine Learning', image: require('../assets/ml.jpg'), screen: 'ML' },
     { id: 5, title: 'Data Science', image: require('../assets/data.jpg'), screen: 'DS' },
-    
   ];
 
   const toggleModal = () => setIsModalVisible(!isModalVisible);
-
   const handleInputChange = (name, value) => setFormData({ ...formData, [name]: value });
 
   return (
     <View style={styles.container}>
-      <SearchBar />
       <Text style={styles.headerText}>Explore Top Categories</Text>
-
-      <ScrollView style={styles.cardsScrollView}>
+      <ScrollView contentContainerStyle={styles.cardsContainer}>
         {categories.map((category) => (
           <View key={category.id} style={styles.card}>
             <Image source={category.image} style={styles.cardImage} />
@@ -50,19 +42,17 @@ const HomePage = () => {
           </View>
         ))}
       </ScrollView>
-
       <TouchableOpacity style={styles.addButton} onPress={toggleModal}>
         <Icon name="plus" size={24} color="white" />
       </TouchableOpacity>
-
       <Modal visible={isModalVisible} animationType="slide" transparent={true}>
-        <KeyboardAvoidingView style={styles.modalContainer} behavior="padding">
+        <KeyboardAvoidingView style={styles.modalContainer} behavior={Platform.OS === 'ios' ? 'padding' : null}>
           <View style={styles.modalContent}>
             <Text style={styles.modalHeader}>New Project</Text>
             <TextInput
               style={styles.input}
               placeholder="Company Name"
-              value={companyInfo.companyName}
+              value={companyName}
               editable={false}
             />
             <TextInput
@@ -92,7 +82,7 @@ const HomePage = () => {
             <TextInput
               style={styles.input}
               placeholder="Contact Info"
-              value={companyInfo.contactInfo}
+              value={contactInfo}
               editable={false}
             />
             <TouchableOpacity style={styles.sendButton} onPress={toggleModal}>
@@ -116,8 +106,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 20,
   },
-  cardsScrollView: {
-    flex: 1,
+  cardsContainer: {
+    paddingBottom: 80,
   },
   card: {
     backgroundColor: '#f0f0f0',
@@ -149,13 +139,15 @@ const styles = StyleSheet.create({
   },
   addButton: {
     position: 'absolute',
-    bottom: 20,
     right: 20,
+    bottom: 20,
     backgroundColor: 'green',
-    padding: 20,
-    borderRadius: 50,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
+    elevation: 5,
   },
   modalContainer: {
     flex: 1,
@@ -164,32 +156,30 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
+    width: '80%',
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
-    width: '80%',
     alignItems: 'center',
   },
   modalHeader: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
   },
   input: {
     width: '100%',
-    borderColor: 'green',
-    borderWidth: 1,
-    borderRadius: 25,
     padding: 10,
+    borderWidth: 1,
+    borderColor: 'green',
+    borderRadius: 10,
     marginBottom: 15,
-    textAlign: 'center',
   },
   sendButton: {
     backgroundColor: 'green',
-    padding: 10,
-    borderRadius: 25,
-    width: '50%',
-    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
     marginTop: 10,
   },
 });

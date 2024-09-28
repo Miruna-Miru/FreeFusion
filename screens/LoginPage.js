@@ -1,6 +1,10 @@
+// screens/LoginPage.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
+import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../firebaseconfig'; 
 
 export default function LoginPage({ navigation }) {
   const [email, setEmail] = useState('');
@@ -8,15 +12,39 @@ export default function LoginPage({ navigation }) {
   const [obscureText, setObscureText] = useState(true);
   const [isFreelancer, setIsFreelancer] = useState(true);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (email && password) {
-      if (isFreelancer) {
-        navigation.navigate('FreeHome');
-      } else {
-        navigation.navigate('Home');
+      try {
+        const auth = getAuth();
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const userId = userCredential.user.uid;
+        console.log(`Logged in User ID: ${userId}`);
+
+        const customersQuery = query(collection(db, 'customers'), where('email', '==', email));
+        const freelancersQuery = query(collection(db, 'freelancers'), where('email', '==', email));
+
+        const customerSnapshot = await getDocs(customersQuery);
+        const freelancerSnapshot = await getDocs(freelancersQuery);
+
+        if (!customerSnapshot.empty) {
+          const username = customerSnapshot.docs[0].data().username; 
+          Alert.alert('Success', 'Customer login successful!');
+          navigation.navigate('Home');
+        } else if (!freelancerSnapshot.empty) {
+          const username = freelancerSnapshot.docs[0].data().username; 
+          Alert.alert('Success', 'Freelancer login successful!');
+          navigation.navigate('FreeHome', { username, userId }); 
+        } else {
+          Alert.alert('Error', 'Login credentials do not match any account type.');
+          auth.signOut();
+        }
+      } catch (error) {
+        console.error('Login Error:', error);
+        const errorMessage = error.message;
+        Alert.alert('Error', errorMessage);
       }
     } else {
-      alert('Please enter valid credentials.');
+      Alert.alert('Error', 'Please enter valid credentials.');
     }
   };
 
