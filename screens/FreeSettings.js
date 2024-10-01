@@ -5,12 +5,14 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import NavBar from './NavBar';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
+import * as Notifications from 'expo-notifications'; // Import the notification library
 
 const FreeSettings = () => {
   const navigation = useNavigation();
   const route = useRoute(); 
   const { userId } = route.params;
   const [email, setEmail] = useState(''); 
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true); // State for notification
 
   useEffect(() => {
     const fetchEmail = async () => {
@@ -72,6 +74,30 @@ const FreeSettings = () => {
     navigation.goBack();
   };
 
+  const toggleNotifications = async () => {
+    setNotificationsEnabled((prevState) => !prevState);
+    if (notificationsEnabled) {
+      // Disable notifications
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.NONE,
+      });
+    } else {
+      // Enable notifications and show a message
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.HIGH,
+      });
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Notifications enabled!",
+          body: "You will now receive notifications.",
+        },
+        trigger: null, // Sends immediately
+      });
+    }
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
@@ -81,6 +107,18 @@ const FreeSettings = () => {
       <View style={styles.section}>
         <Text style={styles.label}>Email</Text>
         <Text style={styles.value}>{email}</Text>
+      </View>
+
+      <View style={styles.notificationSection}>
+        <Text style={styles.label}>Notifications</Text>
+        <TouchableOpacity onPress={toggleNotifications} style={styles.notificationToggle}>
+          <Text style={styles.notificationText}>{notificationsEnabled ? 'Enabled' : 'Disabled'}</Text>
+          <Icon 
+            name={notificationsEnabled ? "notifications-on" : "notifications-off"} 
+            size={28} 
+            color={notificationsEnabled ? 'green' : 'red'} 
+          />
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity onPress={handleRemoveAccount} style={styles.removeAccountButton}>
@@ -105,15 +143,27 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'column', // Changed to column for vertical alignment
   },
   label: {
     fontSize: 18,
   },
   value: {
     fontSize: 16,
+  },
+  notificationSection: {
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  notificationToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  notificationText: {
+    fontSize: 18,
+    marginRight: 10,
   },
   logoutButton: {
     marginTop: 30,

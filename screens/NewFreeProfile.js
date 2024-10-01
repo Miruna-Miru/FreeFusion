@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Animated } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; 
 import { useNavigation } from '@react-navigation/native';
 import CheckBox from 'react-native-check-box';
-import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig'; 
 
-
 const NewFreeProfile = ({ route }) => {
-  const { username, userId} = route.params; 
-  const [email, setEmail] = useState('');
+  const { username, userId } = route.params; 
+  const [email, setEmail] = useState('');  
   const [about, setAbout] = useState('');
   const [specialization, setSpecialization] = useState('');
   const [additionalSpecialization, setAdditionalSpecialization] = useState('');
   const [isAdditionalSpecializationVisible, setIsAdditionalSpecializationVisible] = useState(false);
   const [addOther, setAddOther] = useState(false); 
   const [isChecked, setIsChecked] = useState(false);
+  const animation = new Animated.Value(0); // Animation for jumping text
 
   const navigation = useNavigation();
 
@@ -27,6 +27,7 @@ const NewFreeProfile = ({ route }) => {
 
         if (docSnap.exists()) {
           const data = docSnap.data();
+          setEmail(data.email);  
         } else {
           console.log('No such document!');
         }
@@ -36,7 +37,26 @@ const NewFreeProfile = ({ route }) => {
     };
 
     fetchEmail(); 
+    startJumpAnimation(); // Start the jumping animation
   }, [userId]);
+
+  // Function to start continuous jumping animation
+  const startJumpAnimation = () => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(animation, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animation, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  };
 
   const handleSpecializationChange = (value) => {
     setSpecialization(value);
@@ -71,21 +91,35 @@ const NewFreeProfile = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
-        <Text style={styles.welcomeText}>Welcome, {username}</Text>
+        <Animated.Text
+          style={[
+            styles.welcomeText,
+            {
+              transform: [{ translateY: animation.interpolate({ inputRange: [0, 1], outputRange: [0, -10] }) }],
+            },
+          ]}
+        >
+          Welcome, {username}
+        </Animated.Text>
       </View>
       <View style={styles.bottomContainer}>
         <TextInput
           style={styles.input}
           placeholder="Email"
-          value={email}
+          value={email}  
           editable={false}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="About you"
-          value={about}
-          onChangeText={setAbout}
-        />
+        <View style={styles.labelContainer}>
+          <Text style={styles.label}>About you</Text>
+          <TextInput
+            style={styles.textArea}
+            value={about}
+            onChangeText={setAbout}
+            multiline
+            numberOfLines={4}
+            placeholder="Tell us about yourself..."
+          />
+        </View>
         <Picker
           selectedValue={specialization}
           style={styles.picker}
@@ -116,7 +150,9 @@ const NewFreeProfile = ({ route }) => {
             <Picker.Item label="DevOps" value="DevOps" />
           </Picker>
         )}
-        <Button title="Done" onPress={handleDone} style={styles.doneButton} />
+        <TouchableOpacity onPress={handleDone} style={styles.doneButton}>
+          <Text style={styles.doneButtonText}>Done</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -155,6 +191,21 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     marginBottom: 20,
   },
+  labelContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    color: 'gray',
+  },
+  textArea: {
+    height: 100,
+    borderColor: 'green',
+    borderWidth: 2,
+    borderRadius: 10,
+    paddingLeft: 10,
+    marginBottom: 20,
+  },
   picker: {
     height: 50,
     width: '100%',
@@ -168,7 +219,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   doneButton: {
-    color: 'green',
+    backgroundColor: 'green', // Set button color
+    borderRadius: 10, // Make the edges rounded
+    paddingVertical: 10,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  doneButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 

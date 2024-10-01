@@ -13,6 +13,7 @@ const FreeHome = ({ route }) => {
   const [projectCards, setProjectCards] = useState([]); 
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
+  const [currentDate, setCurrentDate] = useState('');
 
   const carouselItems = [
     { id: 1, text: "Project 1", image: require('../assets/ml.jpg') },
@@ -45,13 +46,20 @@ const FreeHome = ({ route }) => {
     fetchRequests();
   }, []);
 
+  // Get current date in format 'Day Mon Date Year'
+  useEffect(() => {
+    const date = new Date();
+    const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+    setCurrentDate(date.toLocaleDateString('en-US', options));
+  }, []);
+
   const handleSendPress = async () => {
     if (selectedProject) {
-      const email = selectedProject.contactInfo; 
+      const email = selectedProject.contactInfo;
       const subject = `Inquiry about ${selectedProject.projectTitle}`;
       const body = `Hello,\n\nI am interested in the project "${selectedProject.projectTitle}".\n\nThank you!`;
       const mailUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
+  
       await Linking.openURL(mailUrl);
     }
   };
@@ -59,13 +67,10 @@ const FreeHome = ({ route }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}> 
       <NavBar username={username} userId={userId} /> 
-      <View style={styles.avatarContainer}>
-        <Image
-          source={require('../assets/ml.jpg')}
-          style={styles.avatar}
-        />
+      <View style={styles.dateContainer}>
+        <Text style={styles.dateText}>{currentDate}</Text>
       </View>
-      <Text style={styles.userName}>{username}</Text>
+      <Text style={styles.userName}>Hi, {username} !</Text>
       <Text style={styles.ongoingProjectsText}>Ongoing Projects</Text>
 
       <View style={styles.carouselContainer}> 
@@ -85,22 +90,22 @@ const FreeHome = ({ route }) => {
       </View>
 
       <ScrollView style={styles.cardContainer}> 
-  {loading ? (
-    <Text>Loading...</Text>
-  ) : error ? (
-    <Text>Error fetching projects</Text> 
-  ) : projectCards.length === 0 ? (
-    <Text>No projects available</Text> 
-  ) : (
-    projectCards.map((project) => (
-      <TouchableOpacity key={project.id} onPress={() => handleCardPress(project)} style={styles.card}>
-        <Text style={styles.cardTitle}>{project.projectTitle}</Text>
-        <View style={styles.divider} />
-        <Text style={styles.cardDescription}>{project.description}</Text>
-      </TouchableOpacity>
-    ))
-  )}
-</ScrollView>
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : error ? (
+          <Text>Error fetching projects</Text> 
+        ) : projectCards.length === 0 ? (
+          <Text>No projects available</Text> 
+        ) : (
+          projectCards.map((project) => (
+            <TouchableOpacity key={project.id} onPress={() => handleCardPress(project)} style={styles.card}>
+              <Text style={styles.cardTitle}>{project.projectTitle}</Text>
+              <View style={styles.divider} />
+              <Text style={styles.cardDescription}>{project.description}</Text>
+            </TouchableOpacity>
+          ))
+        )}
+      </ScrollView>
 
       <Modal
         animationType="slide"
@@ -119,9 +124,9 @@ const FreeHome = ({ route }) => {
                 <Text style={styles.modalDetail}>Duration: {selectedProject.duration}</Text>
               </View>
               <View style={styles.modalButtons}>
-              <TouchableOpacity style={styles.iconButton} onPress={handleSendPress}>
-              <Icon name="send" size={24} color="white" />
-              </TouchableOpacity>
+                <TouchableOpacity style={styles.iconButton} onPress={handleSendPress}>
+                  <Icon name="send" size={24} color="white" />
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton} onPress={() => setModalVisible(false)}>
                   <Icon name="close" size={24} color="white" />
                 </TouchableOpacity>
@@ -142,17 +147,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingTop: 40, 
   },
-  avatarContainer: {
-    borderRadius: 50,
-    overflow: 'hidden',
-    width: 100,
-    height: 100,
+  dateContainer: {
     marginBottom: 10,
   },
-  avatar: {
-    width: '80%',
-    height: '80%',
-    borderRadius: 50,
+  dateText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'green',
   },
   userName: {
     fontSize: 20,
@@ -197,7 +198,6 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     borderRadius: 10,
-    padding: 15,
     marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: {
@@ -211,16 +211,23 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: 'white',
+    backgroundColor: 'green',
+    padding: 10,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   divider: {
     height: 1,
     backgroundColor: '#ccc',
-    marginVertical: 5,
   },
   cardDescription: {
     fontSize: 14,
-    color: '#666',
+    color: '#333',
+    backgroundColor: 'rgba(144, 238, 144, 0.1)', // Light green (10% opacity)
+    padding: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
   modalContainer: {
     flex: 1,

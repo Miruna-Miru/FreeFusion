@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import LottieView from 'lottie-react-native'; // Import LottieView
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 const WelcomeScreen = ({ navigation, route }) => {
@@ -28,7 +29,14 @@ const WelcomeScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/start.png')} style={styles.image} />
+      {/* Lottie Animation */}
+      <LottieView 
+        source={require('../assets/Rocket.json')}  
+        autoPlay 
+        loop 
+        style={styles.animation}
+      />
+      
       <Text style={styles.title}>Start Your Freelance Journey</Text>
       <Text style={styles.subtitle}>Connect with clients and showcase your skills.</Text>
       <TouchableOpacity
@@ -48,8 +56,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  image: {
-    width: 200,
+  animation: {
+    width: 200,  // Adjust the size of the Lottie animation
     height: 200,
     marginBottom: 20,
   },
