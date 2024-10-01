@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
-    zIndex: 1, // Ensure the button is on top of other content
+    zIndex: 1, 
   },
 });
 

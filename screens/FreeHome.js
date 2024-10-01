@@ -52,18 +52,17 @@ const FreeHome = ({ route }) => {
     const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
     setCurrentDate(date.toLocaleDateString('en-US', options));
   }, []);
-
   const handleSendPress = async () => {
     if (selectedProject) {
       const email = selectedProject.contactInfo;
       const subject = `Inquiry about ${selectedProject.projectTitle}`;
-      const body = `Hello,\n\nI am interested in the project "${selectedProject.projectTitle}".\n\nThank you!`;
-      const mailUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const body = `Hello,\n\nI am interested in the project "${selectedProject.projectTitle}".\n\nThank you!`; 
+      const mailUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`; 
   
       await Linking.openURL(mailUrl);
     }
   };
-
+  
   return (
     <ScrollView contentContainerStyle={styles.container}> 
       <NavBar username={username} userId={userId} /> 
