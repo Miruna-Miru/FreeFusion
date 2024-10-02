@@ -12,31 +12,43 @@ export default function LoginPage({ navigation }) {
   const [obscureText, setObscureText] = useState(true);
   const [isFreelancer, setIsFreelancer] = useState(true);
 
-  const handleLogin = async () => {
+  const handleLogin = async ({ isFreelancerTab, isCustomerTab }) => {
     if (email && password) {
       try {
         const auth = getAuth();
+        
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const userId = userCredential.user.uid;
         console.log(`Logged in User ID: ${userId}`);
-
-        const customersQuery = query(collection(db, 'customers'), where('email', '==', email));
-        const freelancersQuery = query(collection(db, 'freelancers'), where('email', '==', email));
-
-        const customerSnapshot = await getDocs(customersQuery);
-        const freelancerSnapshot = await getDocs(freelancersQuery);
-
-        if (!customerSnapshot.empty) {
-          const username = customerSnapshot.docs[0].data().username; 
-          Alert.alert('Success', 'Customer login successful!');
-          navigation.navigate('HomePage');
-        } else if (!freelancerSnapshot.empty) {
-          const username = freelancerSnapshot.docs[0].data().username; 
-          Alert.alert('Success', 'Freelancer login successful!');
-          navigation.navigate('FreeHome', { username, userId }); 
+  
+        let snapshot, username;
+  
+        if (isFreelancerTab) {
+          const freelancersQuery = query(collection(db, 'freelancers'), where('email', '==', email));
+          snapshot = await getDocs(freelancersQuery);
+  
+          if (!snapshot.empty) {
+            username = snapshot.docs[0].data().username; 
+            Alert.alert('Success', 'Freelancer login successful!');
+            navigation.navigate('FreeHome', { username, userId });
+          } else {
+            await auth.signOut();
+            Alert.alert('Error', 'No matching freelancer account found.');
+          }
+        } else if (isCustomerTab) {
+          const customersQuery = query(collection(db, 'customers'), where('email', '==', email));
+          snapshot = await getDocs(customersQuery);
+  
+          if (!snapshot.empty) {
+            username = snapshot.docs[0].data().username; 
+            Alert.alert('Success', 'Customer login successful!');
+            navigation.navigate('HomePage', { username, userId });
+          } else {
+            await auth.signOut();
+            Alert.alert('Error', 'No matching customer account found.');
+          }
         } else {
-          Alert.alert('Error', 'Login credentials do not match any account type.');
-          auth.signOut();
+          Alert.alert('Error', 'Please select a valid account type to log in.');
         }
       } catch (error) {
         console.error('Login Error:', error);
@@ -46,8 +58,8 @@ export default function LoginPage({ navigation }) {
     } else {
       Alert.alert('Error', 'Please enter valid credentials.');
     }
-  };
-
+  };  
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.brandTitle}>FreeFusion</Text>
