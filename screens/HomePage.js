@@ -8,7 +8,7 @@ import { doc, setDoc } from 'firebase/firestore';
 const HomePage = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const userId = route.params?.userId;
+  const userId = route.params?.userId; 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState({
     companyName: '',
