@@ -12,7 +12,9 @@ export default function LoginPage({ navigation }) {
   const [obscureText, setObscureText] = useState(true);
   const [isFreelancer, setIsFreelancer] = useState(true);
 
-  const handleLogin = async ({ isFreelancerTab, isCustomerTab }) => {
+  const handleLogin = async () => {
+    const isFreelancerTab = isFreelancer;
+    const isCustomerTab = !isFreelancer;
     if (email && password) {
       try {
         const auth = getAuth();
