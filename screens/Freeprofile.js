@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavBar from './NavBar';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
+import * as ImagePicker from 'expo-image-picker';
 
 const FreeProfile = ({ route }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [about, setAbout] = useState('');
   const [specialization, setSpecialization] = useState('');
+  const [avatarUri, setAvatarUri] = useState('');
   const { username, userId } = route.params;
   const userLevel = "Top Rated";
   const projectsCompleted = 15; 
@@ -23,6 +25,7 @@ const FreeProfile = ({ route }) => {
         if (userDoc.exists()) {
           setAbout(userDoc.data().about);
           setSpecialization(userDoc.data().specialization);
+          setAvatarUri(userDoc.data().avatarUri || '');
         } else {
           Alert.alert("Error", "User profile not found!");
         }
@@ -34,6 +37,26 @@ const FreeProfile = ({ route }) => {
 
     fetchUserProfile(); 
   }, [userId]); 
+
+  const handleEditIconPress = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      Alert.alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setAvatarUri(result.assets[0].uri);
+    }
+  };
 
   const renderStars = (rating) => {
     let stars = [];
@@ -50,19 +73,22 @@ const FreeProfile = ({ route }) => {
     return stars;
   };
 
+  const handlePress = () => {
+    navigation.navigate('FreeHome');
+  }
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton}>
+      <TouchableOpacity style={styles.backButton} onPress={handlePress}>
         <Icon name="arrow-back" size={24} color="black" />
       </TouchableOpacity>
 
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
           <Image
-            source={require('../assets/ml.jpg')} 
+            source={avatarUri ? { uri: avatarUri } : require('../assets/ml.jpg')}
             style={styles.avatar}
           />
-          <TouchableOpacity style={styles.editIcon}>
+          <TouchableOpacity style={styles.editIcon} onPress={handleEditIconPress}>
             <Icon name="edit" size={24} color="gray" />
           </TouchableOpacity>
         </View>

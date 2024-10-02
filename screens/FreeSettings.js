@@ -5,14 +5,14 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import NavBar from './NavBar';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
-import * as Notifications from 'expo-notifications'; // Import the notification library
+import * as Notifications from 'expo-notifications';
 
 const FreeSettings = () => {
   const navigation = useNavigation();
-  const route = useRoute(); 
+  const route = useRoute();
   const { userId } = route.params;
-  const [email, setEmail] = useState(''); 
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true); // State for notification
+  const [email, setEmail] = useState('');
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   useEffect(() => {
     const fetchEmail = async () => {
@@ -22,7 +22,7 @@ const FreeSettings = () => {
 
         if (docSnap.exists()) {
           const userData = docSnap.data();
-          setEmail(userData.email); 
+          setEmail(userData.email);
         } else {
           console.log('No such document!');
         }
@@ -32,21 +32,15 @@ const FreeSettings = () => {
     };
 
     fetchEmail();
-  }, [userId]); 
+  }, [userId]);
 
   const handleLogout = () => {
     Alert.alert(
       "Logout",
       "Are you sure you want to logout?",
       [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Logout",
-          onPress: () => navigation.navigate('Login'),
-        },
+        { text: "Cancel", style: "cancel" },
+        { text: "Logout", onPress: () => navigation.navigate('Login') }
       ],
       { cancelable: true }
     );
@@ -57,14 +51,8 @@ const FreeSettings = () => {
       "Delete Account",
       "Are you sure you want to delete your account?",
       [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          onPress: () => navigation.navigate('SignUp'),
-        },
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", onPress: () => navigation.navigate('SignUp') }
       ],
       { cancelable: true }
     );
@@ -77,13 +65,11 @@ const FreeSettings = () => {
   const toggleNotifications = async () => {
     setNotificationsEnabled((prevState) => !prevState);
     if (notificationsEnabled) {
-      // Disable notifications
       await Notifications.setNotificationChannelAsync('default', {
         name: 'default',
         importance: Notifications.AndroidImportance.NONE,
       });
     } else {
-      // Enable notifications and show a message
       await Notifications.setNotificationChannelAsync('default', {
         name: 'default',
         importance: Notifications.AndroidImportance.HIGH,
@@ -93,9 +79,13 @@ const FreeSettings = () => {
           title: "Notifications enabled!",
           body: "You will now receive notifications.",
         },
-        trigger: null, // Sends immediately
+        trigger: null,
       });
     }
+  };
+
+  const handleAboutUsPress = () => {
+    navigation.navigate('About');
   };
 
   return (
@@ -104,26 +94,35 @@ const FreeSettings = () => {
         <Icon name="arrow-back" size={28} color="black" />
       </TouchableOpacity>
 
-      <View style={styles.section}>
+      <TouchableOpacity style={styles.section} activeOpacity={0.6}>
         <Text style={styles.label}>Email</Text>
         <Text style={styles.value}>{email}</Text>
-      </View>
+      </TouchableOpacity>
 
-      <View style={styles.notificationSection}>
+      <TouchableOpacity onPress={toggleNotifications} style={styles.section} activeOpacity={0.6}>
         <Text style={styles.label}>Notifications</Text>
-        <TouchableOpacity onPress={toggleNotifications} style={styles.notificationToggle}>
-          <Text style={styles.notificationText}>{notificationsEnabled ? 'Enabled' : 'Disabled'}</Text>
-          <Icon 
-            name={notificationsEnabled ? "notifications-on" : "notifications-off"} 
-            size={28} 
-            color={notificationsEnabled ? 'green' : 'red'} 
+        <View style={styles.iconContainer}>
+          <Text style={styles.value}>{notificationsEnabled ? 'Enabled' : 'Disabled'}</Text>
+          <Icon
+            name={notificationsEnabled ? "notifications-on" : "notifications-off"}
+            size={28}
+            color={notificationsEnabled ? 'green' : 'red'}
           />
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableOpacity>
 
-      <TouchableOpacity onPress={handleRemoveAccount} style={styles.removeAccountButton}>
-        <Text style={styles.removeAccountText}>Delete Account</Text>
-        <Icon name="delete" size={28} color="#ff4444" />
+      <TouchableOpacity onPress={handleAboutUsPress} style={styles.section} activeOpacity={0.6}>
+        <Text style={styles.label}>About Us</Text>
+        <View style={styles.iconContainer}>
+          <Icon name="info" size={28} color="green" />
+        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={handleRemoveAccount} style={styles.section} activeOpacity={0.6}>
+        <Text style={styles.label}>Delete Account</Text>
+        <View style={styles.iconContainer}>
+          <Icon name="delete" size={28} color="#ff4444" />
+        </View>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
@@ -143,7 +142,13 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 20,
-    flexDirection: 'column', // Changed to column for vertical alignment
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    backgroundColor: 'rgba(144, 238, 144, 0.1)',
+    borderRadius: 5,
   },
   label: {
     fontSize: 18,
@@ -151,19 +156,9 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 16,
   },
-  notificationSection: {
-    marginBottom: 20,
+  iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  notificationToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  notificationText: {
-    fontSize: 18,
-    marginRight: 10,
   },
   logoutButton: {
     marginTop: 30,
@@ -183,16 +178,6 @@ const styles = StyleSheet.create({
     top: 10,
     left: 10,
     padding: 10,
-  },
-  removeAccountButton: {
-    backgroundColor: 'transparent',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  removeAccountText: {
-    fontSize: 18,
-    color: '#ff4444',
-    marginRight: 10,
   },
 });
 

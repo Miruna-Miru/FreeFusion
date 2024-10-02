@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, useAnimatedScrollHandler } from 'react-native-reanimated';
 import { Avatar } from 'react-native-paper';
 import * as MailComposer from 'expo-mail-composer';
 
@@ -59,6 +59,12 @@ const UiUx = () => {
     );
   };
 
+  const scrollY = useSharedValue(0);
+
+  const animatedScrollHandler = useAnimatedScrollHandler((event) => {
+    scrollY.value = event.contentOffset.y;
+  });
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -68,11 +74,24 @@ const UiUx = () => {
         <Text style={styles.headerText}>UI UX</Text>
       </View>
       <Text style={styles.introText}>Explore & find the matching UIUX developer</Text>
-      <ScrollView contentContainerStyle={styles.cardList}>
+      <Animated.ScrollView
+        contentContainerStyle={styles.cardList}
+        onScroll={animatedScrollHandler}
+        scrollEventThrottle={16}
+      >
         {users.map((user) => (
-          <FlipCard key={user.id} user={user} />
+          <Animated.View
+            key={user.id}
+            style={{
+              transform: [{
+                translateY: scrollY.value > 0 ? -scrollY.value * 0.2 : 0
+              }]
+            }}
+          >
+            <FlipCard user={user} />
+          </Animated.View>
         ))}
-      </ScrollView>
+      </Animated.ScrollView>
     </View>
   );
 };

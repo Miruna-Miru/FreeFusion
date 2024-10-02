@@ -8,6 +8,8 @@ import LoginPage from './screens/LoginPage';
 import SignUpPage from './screens/SignUpPage';
 import SplashScreen from './screens/SplashScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
+import About from './screens/About';
+//import Chat from './screens/Chat';
 import FreeHome from './screens/FreeHome';
 import NewFreeProfile from './screens/NewFreeProfile'; 
 import FreeSettings from './screens/FreeSettings';
@@ -88,6 +90,18 @@ export default function App() {
             component={WelcomeScreen}
             options={{ headerShown: false }}
           />
+           <Stack.Screen
+            name="About"
+            component={About}
+            options={{ headerShown: false }}
+          />
+          {/* 
+          <Stack.Screen
+            name="Chat"
+            component={Chat}
+            options={{ headerShown: false }}
+          />
+          */}
           <Stack.Screen
             name="FreeHome"
             component={FreeHome}

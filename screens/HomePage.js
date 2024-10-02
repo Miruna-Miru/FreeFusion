@@ -80,6 +80,7 @@ const HomePage = () => {
       <TouchableOpacity style={styles.addButton} onPress={toggleModal}>
         <Icon name="plus" size={24} color="white" />
       </TouchableOpacity>
+      
       <Modal visible={isModalVisible} animationType="slide" transparent={true}>
         <KeyboardAvoidingView style={styles.modalContainer} behavior={Platform.OS === 'ios' ? 'padding' : null}>
           <View style={styles.modalContent}>
@@ -178,8 +179,20 @@ const styles = StyleSheet.create({
   addButton: {
     position: 'absolute',
     right: 20,
-    bottom: 20,
+    bottom: 80,
     backgroundColor: 'green',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+  },
+  chatButton: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    backgroundColor: 'blue',
     width: 60,
     height: 60,
     borderRadius: 30,

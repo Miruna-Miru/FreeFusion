@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     backgroundColor: 'rgba(144, 238, 144, 0.1)',
     borderTopRightRadius: 20,
-    elevation: 5,
+    elevation: 100,
     paddingVertical: 10,
     position: 'absolute',
     bottom: 0,
