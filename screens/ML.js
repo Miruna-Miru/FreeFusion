@@ -1,16 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Avatar } from 'react-native-paper';
+import { db } from '../firebaseconfig'; 
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import * as MailComposer from 'expo-mail-composer';
 
 const ML = () => {
   const navigation = useNavigation();
-  const users = [
-    { id: 1, name: 'Max Deep', rating: '5.0', avatar: require('../assets/back.jpg'), description: 'Machine Learning expert with 6+ years of experience.' },
-    { id: 2, name: 'Sophie Lake', rating: '4.9', avatar: require('../assets/back.jpg'), description: 'Experienced in deep learning models and AI research.' },
-    { id: 3, name: 'Jack Orange', rating: '4.8', avatar: require('../assets/back.jpg'), description: 'Specializes in data-driven ML solutions.' },
-  ];
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const q = query(collection(db, 'freelancers'), where('specialization', '==', 'Web Development'));
+        const querySnapshot = await getDocs(q);
+        
+        const fetchedUsers = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          name: doc.data().username, 
+          rating: doc.data().rating || 'N/A', 
+          avatar: require('../assets/back.jpg'), 
+          description: doc.data().about || 'No description available.', 
+          email: doc.data().email || 'No email available', 
+        }));
+
+        setUsers(fetchedUsers); 
+      } catch (error) {
+        console.error('Error fetching users: ', error);
+      }
+    };
+
+    fetchUsers(); 
+  }, []);
 
   const FlipCard = ({ user }) => {
     const rotateY = useSharedValue(0);
@@ -32,6 +55,14 @@ const ML = () => {
       rotateY.value = withTiming(isFlipped ? 0 : 180, { duration: 500 });
     };
 
+    const sendEmail = () => {
+      MailComposer.composeAsync({
+        recipients: [user.email],
+        subject: 'Connect with you',
+        body: 'Hello, I would like to connect with you regarding your UI/UX services.',
+      });
+    };
+
     return (
       <TouchableOpacity onPress={flipCard} style={styles.card}>
         <Animated.View style={[styles.cardFront, frontStyle]}>
@@ -41,7 +72,8 @@ const ML = () => {
         </Animated.View>
         <Animated.View style={[styles.cardBack, backStyle]}>
           <Text style={styles.description}>{user.description}</Text>
-          <TouchableOpacity style={styles.connectButton}>
+          <Text style={styles.email}>Email: {user.email}</Text>
+          <TouchableOpacity style={styles.connectButton} onPress={sendEmail}>
             <Text style={styles.connectButtonText}>Connect</Text>
           </TouchableOpacity>
         </Animated.View>
@@ -55,10 +87,10 @@ const ML = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backButton}>&lt;</Text>
         </TouchableOpacity>
-        <Text style={styles.headerText}>Machine Learning</Text>
+        <Text style={styles.headerText}>Web Development</Text>
       </View>
 
-      <Text style={styles.subtitle}>Explore & Find the Best ML Experts</Text>
+      <Text style={styles.subtitle}>Explore & Find the Best Web Development Experts</Text>
 
       <ScrollView contentContainerStyle={styles.cardList}>
         {users.map((user) => (
@@ -112,6 +144,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
+    padding: 10,
   },
   cardBack: {
     width: '100%',
@@ -125,6 +158,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  email: {
+    fontSize: 14,
+    color: '#fff',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   rating: {
     marginTop: 5,
