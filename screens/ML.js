@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#d0f0c0',
+    backgroundColor: 'green',
     borderRadius: 10,
   },
   userName: {
@@ -138,13 +138,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   connectButton: {
-    backgroundColor: '#54d3c2',
+    backgroundColor: 'white',
     paddingVertical: 8,
     paddingHorizontal: 20,
     borderRadius: 5,
   },
   connectButtonText: {
-    color: '#4caf50',
+    color: 'green',
     fontWeight: 'bold',
   },
 });

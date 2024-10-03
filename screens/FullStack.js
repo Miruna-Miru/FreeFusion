@@ -138,13 +138,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   connectButton: {
-    backgroundColor: '#54d3c2',
+    backgroundColor: 'white',
     paddingVertical: 8,
     paddingHorizontal: 20,
     borderRadius: 5,
   },
   connectButtonText: {
-    color: 'white',
+    color: 'green',
     fontWeight: 'bold',
   },
 });
