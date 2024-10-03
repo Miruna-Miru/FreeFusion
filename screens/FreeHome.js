@@ -4,7 +4,8 @@ import Carousel from 'react-native-reanimated-carousel';
 import NavBar from './NavBar';
 import Icon from 'react-native-vector-icons/Ionicons'; 
 import { db } from '../firebaseconfig'; 
-import { collection, getDocs } from 'firebase/firestore'; 
+import { collection, getDocs, addDoc } from 'firebase/firestore'; 
+import { getAuth } from 'firebase/auth';
 
 const FreeHome = ({ route }) => {
   const { username, userId } = route.params;
@@ -14,6 +15,7 @@ const FreeHome = ({ route }) => {
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
   const [currentDate, setCurrentDate] = useState('');
+  const auth = getAuth();
 
   const carouselItems = [
     { id: 1, text: "Project 1", image: require('../assets/ml.jpg') },
@@ -46,7 +48,6 @@ const FreeHome = ({ route }) => {
     fetchRequests();
   }, []);
 
-  // Get current date in format 'Day Mon Date Year'
   useEffect(() => {
     const date = new Date();
     const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
@@ -60,6 +61,20 @@ const FreeHome = ({ route }) => {
       const mailUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`; 
   
       await Linking.openURL(mailUrl);
+
+      await addDoc(collection(db, 'Freelancer_accept'), {
+        freelancerUsername: username, 
+        freelancerEmail: auth.currentUser.email, 
+        freelancerUserId: userId, 
+        projectName: selectedProject.projectTitle, 
+        customerEmail: selectedProject.contactInfo, 
+        customerUsername: selectedProject.companyName, 
+        customerUserId: selectedProject.userId, 
+        status: "Notification", 
+        timestamp: new Date(), 
+      });
+
+      console.log("Notification saved to Firestore");
     }
   };
   
