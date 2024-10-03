@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 10,
-    backgroundColor: '#d0f0c0',
+    backgroundColor: 'rgba(144, 238, 144, 0.1)',
     borderRadius: 5,
   },
   label: {

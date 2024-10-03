@@ -26,41 +26,36 @@ const HomePage = () => {
     const currentUser = auth.currentUser;
     if (currentUser && currentUser.email) {
       setCurrentUserEmail(currentUser.email);
-      console.log('currentUser.email')
+      console.log('currentUser.email');
     }
   }, []);
 
   const fetchFreelancerRequests = async () => {
     if (!currentUserEmail) {
-        console.log('No current user email available.');
-        return;
+      console.log('No current user email available.');
+      return;
     }
-
     try {
-        const requestsQuery = query(
-            collection(db, 'Freelancer_accept'),
-            where('customerEmail', '==', currentUserEmail)
-        );
-        const querySnapshot = await getDocs(requestsQuery);
-
-        const requests = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-        }));
-
-        const filteredRequests = requests.filter(request => request.status !== 'Accepted' && request.status !== 'Declined');
-
-        if (filteredRequests.length === 0) {
-            console.log('No requests found.');
-        } else {
-            console.log('Requests found: ', filteredRequests);
-        }
-
-        setFreelancerRequests(filteredRequests);
+      const requestsQuery = query(
+        collection(db, 'Freelancer_accept'),
+        where('customerEmail', '==', currentUserEmail)
+      );
+      const querySnapshot = await getDocs(requestsQuery);
+      const requests = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      const filteredRequests = requests.filter(request => request.status !== 'Accepted' && request.status !== 'Declined');
+      if (filteredRequests.length === 0) {
+        console.log('No requests found.');
+      } else {
+        console.log('Requests found: ', filteredRequests);
+      }
+      setFreelancerRequests(filteredRequests);
     } catch (error) {
-        console.error('Error fetching freelancer requests: ', error);
+      console.error('Error fetching freelancer requests: ', error);
     }
-};
+  };
 
   const handleAccept = async (requestId) => {
     try {
@@ -94,8 +89,8 @@ const HomePage = () => {
   const categories = [
     { id: 1, title: 'UI UX design', image: require('../assets/back.jpg'), screen: 'UiUx' },
     { id: 2, title: 'Animation', image: require('../assets/front.jpg'), screen: 'Animation' },
-    { id: 3, title: 'Fullstack Developer', image: require('../assets/uiux.jpg'), screen: 'FullStack' },
-    { id: 4, title: 'Machine Learning', image: require('../assets/ml.jpg'), screen: 'ML' },
+    { id: 3, title: 'App Developer', image: require('../assets/uiux.jpg'), screen: 'FullStack' },
+    { id: 4, title: 'Web Development', image: require('../assets/ml.jpg'), screen: 'ML' },
     { id: 5, title: 'Data Science', image: require('../assets/data.jpg'), screen: 'DS' },
   ];
 
@@ -107,13 +102,11 @@ const HomePage = () => {
     if (userId && formData.projectTitle && formData.description && formData.salary) {
       try {
         const requestRef = doc(db, 'customer_requests', 'requestId' + Date.now()); 
-
         await setDoc(requestRef, {
           userId: userId,
           ...formData,
           createdAt: new Date(),
         });
-
         toggleModal();
       } catch (error) {
         console.error("Error saving request: ", error);
@@ -125,6 +118,10 @@ const HomePage = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.postProjectText}>Ready to take on new challenges? Post your project now!</Text>
+      <TouchableOpacity style={styles.postButton} onPress={toggleModal}>
+        <Icon name="plus" size={24} color="white" />
+      </TouchableOpacity>
       <Text style={styles.headerText}>Explore Top Categories</Text>
       <ScrollView contentContainerStyle={styles.cardsContainer}>
         {categories.map((category) => (
@@ -139,26 +136,13 @@ const HomePage = () => {
           </View>
         ))}
       </ScrollView>
-      <TouchableOpacity style={styles.addButton} onPress={toggleModal}>
-        <Icon name="plus" size={24} color="white" />
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.notificationButton}
-        onPress={toggleNotificationModal}
-      >
+      <TouchableOpacity style={styles.notificationButton} onPress={toggleNotificationModal}>
         <Icon name="bell" size={24} color="white" />
       </TouchableOpacity>
-
-      <Modal
-        visible={isNotificationModalVisible}
-        animationType="slide"
-        transparent={true}
-      >
+      <Modal visible={isNotificationModalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalcont}>
           <ScrollView contentContainerStyle={styles.modalcontent}>
             <Text style={styles.modalHeader}>Freelancer Requests</Text>
-
             {freelancerRequests.length > 0 ? (
               freelancerRequests.map((request) => (
                 <View key={request.id} style={styles.requestCard}>
@@ -184,7 +168,6 @@ const HomePage = () => {
             ) : (
               <Text>No requests available</Text>
             )}
-
             <TouchableOpacity
               style={styles.closeButton}
               onPress={toggleNotificationModal}
@@ -194,7 +177,6 @@ const HomePage = () => {
           </ScrollView>
         </View>
       </Modal>
-      
       <Modal visible={isModalVisible} animationType="slide" transparent={true}>
         <KeyboardAvoidingView style={styles.modalContainer} behavior={Platform.OS === 'ios' ? 'padding' : null}>
           <View style={styles.modalContent}>
@@ -244,7 +226,6 @@ const HomePage = () => {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-
     </View>
   );
 };
@@ -253,34 +234,43 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    paddingHorizontal: 16,
+    padding: 16,
+  },
+  postProjectText: {
+    color: 'black',
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  postButton: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 50,
+    padding: 12,
+    alignSelf: 'flex-end',
   },
   headerText: {
-    fontSize: 18,
+    color: 'green',
+    fontSize: 20,
     fontWeight: 'bold',
-    marginVertical: 20,
+    marginVertical: 12,
   },
   cardsContainer: {
-    paddingBottom: 80,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   card: {
     backgroundColor: 'rgba(144, 238, 144, 0.1)',
-    borderRadius: 10,
-    flexDirection: 'row',
-    padding: 16,
-    alignItems: 'center',
+    borderRadius: 8,
+    width: '48%',
     marginBottom: 16,
   },
   cardImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 10,
-    marginRight: 16,
+    height: 120,
+    width:170,
+    borderRadius: 8,
   },
   cardContent: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    padding: 8,
     alignItems: 'center',
   },
   cardTitle: {
@@ -288,144 +278,100 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   cardButton: {
-    fontSize: 24,
-    color: 'green',
-  },
-  addButton: {
-    position: 'absolute',
-    right: 20,
-    bottom: 150,
-    backgroundColor: 'green',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 5,
+    color: '#4CAF50',
+    marginTop: 8,
   },
   notificationButton: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 50,
+    padding: 12,
     position: 'absolute',
-    right: 20,
-    bottom: 80,
-    backgroundColor: 'blue',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 5,
+    bottom: 16,
+    right: 16,
   },
-  modalContainer: {
+  modalcont: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  modalContent: {
-    width: '80%',
+  modalcontent: {
+    width: '90%',
     backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
+    borderRadius: 8,
+    padding: 16,
   },
   modalHeader: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    width: '100%',
-    padding: 10,
-    borderWidth: 1,
-    borderColor: 'green',
-    borderRadius: 10,
-    marginBottom: 15,
-  },
-  sendButton: {
-    backgroundColor: 'green',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1, 
-  },
-  modalcont: {
-    flex: 1,
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    position: 'absolute',      
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-    zIndex: 1000,   
-  },
-  modalcontent: {
-    width: '90%',               
-    backgroundColor: 'white',    
-    borderRadius: 20,            
-    padding: 20,
-    alignItems: 'center',        
-    elevation: 5,                
-    shadowColor: '#000',         
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    marginBottom: 12,
+    textAlign: 'center',
   },
   requestCard: {
-    backgroundColor: '#f9f9f9', 
-    borderRadius: 15,
-    padding: 20,
-    marginBottom: 20,
-    width: '100%',               
-    elevation: 2,               
-    shadowColor: '#000',         
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    marginBottom: 12,
+    padding: 10,
+    backgroundColor: '#f1f1f1',
+    borderRadius: 8,
   },
   requestTitle: {
-    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
   },
   requestDetail: {
-    fontSize: 16,
-    marginBottom: 5,
+    marginBottom: 4,
   },
   requestDescription: {
-    fontSize: 14,
-    color: '#666',               
-    marginBottom: 15,
+    marginBottom: 8,
   },
   buttonsContainer: {
-    flexDirection: 'row',        
+    flexDirection: 'row',
     justifyContent: 'space-between',
   },
   acceptButton: {
-    backgroundColor: '#4CAF50',  
-    paddingHorizontal: 30,
-    paddingVertical: 10,
-    borderRadius: 30,            
-    marginRight: 10,
+    backgroundColor: '#4CAF50',
+    padding: 8,
+    borderRadius: 4,
+    flex: 1,
+    marginRight: 4,
   },
   declineButton: {
-    backgroundColor: '#F44336', 
-    paddingHorizontal: 30,
-    paddingVertical: 10,
-    borderRadius: 30,           
+    backgroundColor: '#f44336',
+    padding: 8,
+    borderRadius: 4,
+    flex: 1,
+    marginLeft: 4,
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
     textAlign: 'center',
+  },
+  closeButton: {
+    marginTop: 16,
+    alignSelf: 'flex-end',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 16,
+    margin: 16,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    padding: 10,
+    marginVertical: 4,
+  },
+  sendButton: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 4,
+    padding: 10,
+    alignItems: 'center',
+    marginTop: 16,
   },
 });
 

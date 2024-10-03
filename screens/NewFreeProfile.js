@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   topContainer: {
     flex: 1,
-    backgroundColor: '#d0f0c0',
+    backgroundColor: 'green',
     justifyContent: 'center',
     alignItems: 'center',
     borderBottomLeftRadius: 30,
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     width: '100%',
-    borderColor: '#d0f0c0',
+    borderColor: 'green',
     borderWidth: 2,
     borderRadius: 10,
     paddingLeft: 10,
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   textArea: {
     height: 100,
-    borderColor: '#d0f0c0',
+    borderColor: 'green',
     borderWidth: 2,
     borderRadius: 10,
     paddingLeft: 10,
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   doneButton: {
-    backgroundColor: '#54d3c2', 
+    backgroundColor: 'green', 
     borderRadius: 10,
     paddingVertical: 10,
     alignItems: 'center',

@@ -1,16 +1,46 @@
-// screens/LoginPage.js
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Animated, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
 import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseconfig'; 
+
+const { height, width } = Dimensions.get('window');
+
+const Bubble = ({ style }) => {
+  return <Animated.View style={[styles.bubble, style]} />;
+};
 
 export default function LoginPage({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [obscureText, setObscureText] = useState(true);
   const [isFreelancer, setIsFreelancer] = useState(true);
+  const [bubbles, setBubbles] = useState([]);
+
+  useEffect(() => {
+    const createBubbles = () => {
+      const newBubbles = [];
+      for (let i = 0; i < 10; i++) {
+        const animation = new Animated.Value(0);
+        newBubbles.push({
+          animation,
+          left: Math.random() * width,
+        });
+
+        Animated.loop(
+          Animated.timing(animation, {
+            toValue: 1,
+            duration: Math.random() * 5000 + 3000,
+            useNativeDriver: true,
+          })
+        ).start();
+      }
+      setBubbles(newBubbles);
+    };
+    
+    createBubbles();
+  }, []);
 
   const handleLogin = async () => {
     const isFreelancerTab = isFreelancer;
@@ -21,7 +51,6 @@ export default function LoginPage({ navigation }) {
         
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const userId = userCredential.user.uid;
-        console.log(`Logged in User ID: ${userId}`);
   
         let snapshot, username;
   
@@ -53,7 +82,6 @@ export default function LoginPage({ navigation }) {
           Alert.alert('Error', 'Please select a valid account type to log in.');
         }
       } catch (error) {
-        console.error('Login Error:', error);
         const errorMessage = error.message;
         Alert.alert('Error', errorMessage);
       }
@@ -63,62 +91,92 @@ export default function LoginPage({ navigation }) {
   };  
   
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.brandTitle}>FreeFusion</Text>
-      <Text style={styles.title}>Hello Again!!</Text>
-      <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tab, isFreelancer && styles.activeTab]}
-          onPress={() => setIsFreelancer(true)}
-        >
-          <Text style={[styles.tabText, isFreelancer && styles.activeTabText]}>Freelancer</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, !isFreelancer && styles.activeTab]}
-          onPress={() => setIsFreelancer(false)}
-        >
-          <Text style={[styles.tabText, !isFreelancer && styles.activeTabText]}>Customer</Text>
-        </TouchableOpacity>
-      </View>
-      <TextInput
-        style={styles.input}
-        placeholder={isFreelancer ? 'Freelancer Email' : 'Customer Email'}
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
-      <View style={styles.passwordContainer}>
-        <TextInput
-          style={styles.passwordInput}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={obscureText}
-        />
-        <TouchableOpacity onPress={() => setObscureText(!obscureText)} style={styles.eyeIcon}>
-          <Ionicons
-            name={obscureText ? 'eye-off-outline' : 'eye-outline'}
-            size={20}
-            color="gray"
+    <View style={styles.wrapper}>
+      {bubbles.map((bubble, index) => {
+        const bubbleY = bubble.animation.interpolate({
+          inputRange: [0, 1],
+          outputRange: [-50, height + 50],
+        });
+        return (
+          <Bubble
+            key={index}
+            style={{
+              transform: [{ translateY: bubbleY }],
+              left: bubble.left,
+            }}
           />
+        );
+      })}
+
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.brandTitle}>FreeFusion</Text>
+        <Text style={styles.title}>Hello Again!!</Text>
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[styles.tab, isFreelancer && styles.activeTab]}
+            onPress={() => setIsFreelancer(true)}
+          >
+            <Text style={[styles.tabText, isFreelancer && styles.activeTabText]}>Freelancer</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, !isFreelancer && styles.activeTab]}
+            onPress={() => setIsFreelancer(false)}
+          >
+            <Text style={[styles.tabText, !isFreelancer && styles.activeTabText]}>Customer</Text>
+          </TouchableOpacity>
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder={isFreelancer ? 'Freelancer Email' : 'Customer Email'}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+        />
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.passwordInput}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={obscureText}
+          />
+          <TouchableOpacity onPress={() => setObscureText(!obscureText)} style={styles.eyeIcon}>
+            <Ionicons
+              name={obscureText ? 'eye-off-outline' : 'eye-outline'}
+              size={20}
+              color="gray"
+            />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity onPress={handleLogin} style={styles.button}>
+          <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
-      </View>
-      <TouchableOpacity onPress={handleLogin} style={styles.button}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-        <Text style={styles.signupLink}>New user? Sign Up</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+          <Text style={styles.signupLink}>New user? Sign Up</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: 'white',
+    position: 'relative',
+  },
   container: {
     flexGrow: 1,
-    backgroundColor: '#d0f0c0',
+    backgroundColor: 'transparent',
     padding: 20,
     justifyContent: 'center',
+  },
+  bubble: {
+    position: 'absolute',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'rgba(144, 238, 144, 0.2)',
   },
   brandTitle: {
     fontSize: 38,
@@ -181,7 +239,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   button: {
-    backgroundColor: '#54d3c2',
+    backgroundColor: 'green',
     padding: 10,
     borderRadius: 20,
     alignItems: 'center',

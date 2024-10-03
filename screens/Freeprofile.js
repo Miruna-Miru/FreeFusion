@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-na
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavBar from './NavBar';
 import { doc, getDoc } from 'firebase/firestore';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { db } from '../firebaseconfig';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -74,12 +75,13 @@ const FreeProfile = ({ route }) => {
   };
 
   const handlePress = () => {
-    navigation.navigate('FreeHome');
-  }
+    navigation.goBack();
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={handlePress}>
-        <Icon name="arrow-back" size={24} color="black" />
+        <Icon name="arrow-back" size={24} color="black"/>
       </TouchableOpacity>
 
       <View style={styles.header}>
@@ -175,7 +177,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: '',
+    backgroundColor: 'rgba(144, 238, 144, 0.1)',
     borderRadius: 15,
     padding: 5,
   },

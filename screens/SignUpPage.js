@@ -57,7 +57,7 @@ const SignUp = ({ navigation }) => {
           onPress={() => setActiveTab('Customer')}
         >
           <Text style={[styles.tabText, activeTab === 'Customer' && styles.activeTabText]}>Customer</Text>
-          {activeTab === 'Customer' && <View style={styles.underline} />}
+          {activeTab === 'Customer' && <View  />}
         </TouchableOpacity>
         <TouchableOpacity 
           style={[styles.tab, activeTab === 'Freelancer' && styles.activeTab]}
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#d0f0c0',
+    color: 'green',
     textAlign: 'center',
     marginBottom: 30,
   },
@@ -159,31 +159,27 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 3,
-    borderBottomColor: '#d0f0c0',
+    borderBottomColor: 'green',
   },
   tabText: {
     fontSize: 18,
     color: 'gray',
   },
   activeTabText: {
-    color: '#d0f0c0',
+    color: 'green',
     fontWeight: 'bold',
   },
-  underline: {
-    height: 3,
-    backgroundColor: '#d0f0c0',
-    marginTop: 5,
-  },
+  
   input: {
     borderWidth: 1,
-    borderColor: '#d0f0c0', 
+    borderColor: 'green', 
     borderRadius: 20, 
     padding: 10,
     marginVertical: 10,
   },
   picker: {
     height: 40,
-    borderColor: '#d0f0c0', 
+    borderColor: 'green', 
     borderWidth: 1,
     borderRadius: 20,
     marginVertical: 10,
@@ -200,7 +196,7 @@ const styles = StyleSheet.create({
     top: 10,
   },
   signUpButton: {
-    backgroundColor: '#54d3c2',
+    backgroundColor: 'green',
     padding: 15,
     borderRadius: 20, 
     alignItems: 'center',
