@@ -1,17 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, useAnimatedScrollHandler } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Avatar } from 'react-native-paper';
+import { db } from '../firebaseconfig'; 
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import * as MailComposer from 'expo-mail-composer';
 
 const UiUx = () => {
   const navigation = useNavigation();
-  const users = [
-    { id: 1, name: 'John Doe', rating: '4.9', avatar: require('../assets/back.jpg'), description: 'Experienced UI/UX Designer specializing in mobile apps.', email: 'mirmirunalini@gmail.com' },
-    { id: 2, name: 'Jane Smith', rating: '4.8', avatar: require('../assets/back.jpg'), description: 'Expert in designing user-friendly interfaces.', email: 'jane.smith@example.com' },
-    { id: 3, name: 'Alex Brown', rating: '4.7', avatar: require('../assets/back.jpg'), description: 'Passionate about creating intuitive designs.', email: 'alex.brown@example.com' },
-  ];
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const q = query(collection(db, 'freelancers'), where('specialization', '==', 'UI/UX'));
+        const querySnapshot = await getDocs(q);
+        
+        const fetchedUsers = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          name: doc.data().username || 'No name available',
+          rating: doc.data().rating || 'N/A', 
+          avatar: require('../assets/back.jpg'), 
+          description: doc.data().about || 'No description available.', 
+          email: doc.data().email || 'No email available', 
+        }));
+
+        setUsers(fetchedUsers); 
+      } catch (error) {
+        console.error('Error fetching users: ', error);
+      }
+    };
+
+    fetchUsers(); 
+  }, []);
 
   const FlipCard = ({ user }) => {
     const rotateY = useSharedValue(0);
@@ -59,12 +81,6 @@ const UiUx = () => {
     );
   };
 
-  const scrollY = useSharedValue(0);
-
-  const animatedScrollHandler = useAnimatedScrollHandler((event) => {
-    scrollY.value = event.contentOffset.y;
-  });
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -73,25 +89,14 @@ const UiUx = () => {
         </TouchableOpacity>
         <Text style={styles.headerText}>UI UX</Text>
       </View>
-      <Text style={styles.introText}>Explore & find the matching UIUX developer</Text>
-      <Animated.ScrollView
-        contentContainerStyle={styles.cardList}
-        onScroll={animatedScrollHandler}
-        scrollEventThrottle={16}
-      >
+
+      <Text style={styles.subtitle}>Explore & Find the Best UI/UX Experts</Text>
+
+      <ScrollView contentContainerStyle={styles.cardList}>
         {users.map((user) => (
-          <Animated.View
-            key={user.id}
-            style={{
-              transform: [{
-                translateY: scrollY.value > 0 ? -scrollY.value * 0.2 : 0
-              }]
-            }}
-          >
-            <FlipCard user={user} />
-          </Animated.View>
+          <FlipCard key={user.id} user={user} />
         ))}
-      </Animated.ScrollView>
+      </ScrollView>
     </View>
   );
 };
@@ -101,25 +106,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 16,
-    paddingTop: 30,
+    paddingTop: 40,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   backButton: {
     fontSize: 24,
-    color: 'black',
+    color: '#000',
     marginRight: 16,
   },
   headerText: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
   },
-  introText: {
+  subtitle: {
     fontSize: 16,
-    color: '#888',
+    color: '#666',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -139,19 +144,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
+    padding: 10,
   },
   cardBack: {
     width: '100%',
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#d0f0c0',
+    backgroundColor: 'green',
     borderRadius: 10,
   },
   userName: {
     marginTop: 10,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  email: {
+    fontSize: 14,
+    color: '#fff',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   rating: {
     marginTop: 5,
@@ -161,23 +173,17 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 14,
     color: '#fff',
-    marginBottom: 5,
-    textAlign: 'center',
-  },
-  email: {
-    fontSize: 14,
-    color: '#fff',
     marginBottom: 20,
     textAlign: 'center',
   },
   connectButton: {
-    backgroundColor: '#54d3c2',
+    backgroundColor: 'white',
     paddingVertical: 8,
     paddingHorizontal: 20,
     borderRadius: 5,
   },
   connectButtonText: {
-    color: '#4caf50',
+    color: 'green',
     fontWeight: 'bold',
   },
 });
