@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   card: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'rgba(144, 238, 144, 0.1)',
     borderRadius: 10,
     flexDirection: 'row',
     padding: 16,
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   },
   cardButton: {
     fontSize: 24,
-    color: '#007bff',
+    color: 'green',
   },
   addButton: {
     position: 'absolute',

@@ -12,7 +12,9 @@ export default function LoginPage({ navigation }) {
   const [obscureText, setObscureText] = useState(true);
   const [isFreelancer, setIsFreelancer] = useState(true);
 
-  const handleLogin = async ({ isFreelancerTab, isCustomerTab }) => {
+  const handleLogin = async () => {
+    const isFreelancerTab = isFreelancer;
+    const isCustomerTab = !isFreelancer;
     if (email && password) {
       try {
         const auth = getAuth();
@@ -114,7 +116,7 @@ export default function LoginPage({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#d0f0c0',
     padding: 20,
     justifyContent: 'center',
   },
@@ -179,7 +181,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   button: {
-    backgroundColor: 'green',
+    backgroundColor: '#54d3c2',
     padding: 10,
     borderRadius: 20,
     alignItems: 'center',

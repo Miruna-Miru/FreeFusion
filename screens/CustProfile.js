@@ -140,13 +140,13 @@ const styles = StyleSheet.create({
     },
     input: {
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: 'green',
         borderRadius: 5,
         padding: 10,
         marginBottom: 15,
     },
     button: {
-        backgroundColor: 'green',
+        backgroundColor: '#green',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',

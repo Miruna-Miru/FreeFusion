@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'green',
+    color: '#d0f0c0',
   },
   userName: {
     fontSize: 20,
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#d0f0c0',
     marginHorizontal: 10,
   },
   carouselImage: {
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   cardDescription: {
     fontSize: 14,
     color: '#333',
-    backgroundColor: 'rgba(144, 238, 144, 0.1)', // Light green (10% opacity)
+    backgroundColor: 'rgba(144, 238, 144, 0.1)', 
     padding: 10,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,

@@ -6,7 +6,7 @@ export default function About({ navigation }) {
   const animation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Trigger the animation on component mount
+    
     Animated.timing(animation, {
       toValue: 1,
       duration: 500,
@@ -20,7 +20,7 @@ export default function About({ navigation }) {
       {
         translateY: animation.interpolate({
           inputRange: [0, 1],
-          outputRange: [20, 0], // Move from bottom to original position
+          outputRange: [20, 0], 
         }),
       },
     ],
@@ -59,9 +59,9 @@ export default function About({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white', // Changed to white
+    backgroundColor: 'white', 
     padding: 16,
-    paddingTop: 40, // Added space at the top
+    paddingTop: 40, 
   },
   header: {
     flexDirection: 'row',
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: 'green',
-    fontSize: 24, // Made the title bigger
+    fontSize: 24, 
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -88,8 +88,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   detailsHeader: {
-    color: 'green',
-    fontSize: 20, // Adjust header size for details
+    color: '#green',
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 5,
   },

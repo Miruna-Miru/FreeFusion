@@ -77,16 +77,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
-    overflow: 'hidden', // Ensure animations stay within bounds
+    overflow: 'hidden', 
   },
   wave: {
     position: 'absolute',
-    width: width * 2, // Width larger than screen for full coverage as it moves
-    height: height, // Height adjusted to cover screen height effectively
-    backgroundColor: 'green',
-    top: -height / 2, // Start wave off-screen from the top
-    left: -width, // Start wave off-screen from the left
-    transform: [{ skewX: '30deg' }], // Skew for a wave-like appearance
+    width: width * 2, 
+    height: height, 
+    backgroundColor: '#d0f0c0',
+    top: -height / 2, 
+    left: -width,
+    transform: [{ skewX: '30deg' }], 
   },
   textContainer: {
     justifyContent: 'center',

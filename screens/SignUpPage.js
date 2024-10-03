@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: 'green',
+    color: '#d0f0c0',
     textAlign: 'center',
     marginBottom: 30,
   },
@@ -159,31 +159,31 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 3,
-    borderBottomColor: 'green',
+    borderBottomColor: '#d0f0c0',
   },
   tabText: {
     fontSize: 18,
     color: 'gray',
   },
   activeTabText: {
-    color: 'green',
+    color: '#d0f0c0',
     fontWeight: 'bold',
   },
   underline: {
     height: 3,
-    backgroundColor: 'green',
+    backgroundColor: '#d0f0c0',
     marginTop: 5,
   },
   input: {
     borderWidth: 1,
-    borderColor: 'green', 
+    borderColor: '#d0f0c0', 
     borderRadius: 20, 
     padding: 10,
     marginVertical: 10,
   },
   picker: {
     height: 40,
-    borderColor: 'green', 
+    borderColor: '#d0f0c0', 
     borderWidth: 1,
     borderRadius: 20,
     marginVertical: 10,
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     top: 10,
   },
   signUpButton: {
-    backgroundColor: 'green',
+    backgroundColor: '#54d3c2',
     padding: 15,
     borderRadius: 20, 
     alignItems: 'center',

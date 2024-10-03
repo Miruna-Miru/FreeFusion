@@ -29,7 +29,7 @@ const WelcomeScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      {/* Lottie Animation */}
+      
       <LottieView 
         source={require('../assets/Rocket.json')}  
         autoPlay 
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   animation: {
-    width: 200,  // Adjust the size of the Lottie animation
+    width: 200,  
     height: 200,
     marginBottom: 20,
   },

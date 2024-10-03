@@ -9,7 +9,7 @@ const NavBar = () => {
 
   const { username, userId} = route.params;
 
-  const getColor = (page) => (route.name === page ? 'green' : 'black');
+  const getColor = (page) => (route.name === page ? '#54d3c2' : 'black');
 
   return (
     <View style={styles.container}>
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
-    backgroundColor: 'rgba(144, 238, 144, 0.1)',
+    backgroundColor: '#d0f0c0',
     borderTopRightRadius: 20,
     elevation: 100,
     paddingVertical: 10,
