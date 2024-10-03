@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput,
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { db, auth } from '../firebaseconfig'; 
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, query, where, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
 
 const HomePage = () => {
   const navigation = useNavigation();
@@ -18,17 +18,79 @@ const HomePage = () => {
     salary: '',
     contactInfo: '',
   });
+  const [isNotificationModalVisible, setIsNotificationModalVisible] = useState(false);
+  const [freelancerRequests, setFreelancerRequests] = useState([]);
+  const [currentUserEmail, setCurrentUserEmail] = useState('');
 
   useEffect(() => {
     const currentUser = auth.currentUser;
     if (currentUser && currentUser.email) {
-      setFormData((prevData) => ({
-        ...prevData,
-        contactInfo: currentUser.email,
-      }));
+      setCurrentUserEmail(currentUser.email);
+      console.log('currentUser.email')
     }
   }, []);
 
+  const fetchFreelancerRequests = async () => {
+    if (!currentUserEmail) {
+        console.log('No current user email available.');
+        return;
+    }
+
+    try {
+        const requestsQuery = query(
+            collection(db, 'Freelancer_accept'),
+            where('customerEmail', '==', currentUserEmail)
+        );
+        const querySnapshot = await getDocs(requestsQuery);
+
+        const requests = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+
+        const filteredRequests = requests.filter(request => request.status !== 'Accepted' && request.status !== 'Declined');
+
+        if (filteredRequests.length === 0) {
+            console.log('No requests found.');
+        } else {
+            console.log('Requests found: ', filteredRequests);
+        }
+
+        setFreelancerRequests(filteredRequests);
+    } catch (error) {
+        console.error('Error fetching freelancer requests: ', error);
+    }
+};
+
+  const handleAccept = async (requestId) => {
+    try {
+      const requestRef = doc(db, 'Freelancer_accept', requestId);
+      await updateDoc(requestRef, { status: 'Accepted' });
+      fetchFreelancerRequests();  
+      setIsNotificationModalVisible(false); 
+    } catch (error) {
+      console.error('Error accepting request: ', error);
+    }
+  };
+
+  const handleDecline = async (requestId) => {
+    try {
+      const requestRef = doc(db, 'Freelancer_accept', requestId);
+      await deleteDoc(requestRef);
+      fetchFreelancerRequests(); 
+      setIsNotificationModalVisible(false); 
+    } catch (error) {
+      console.error('Error declining request: ', error);
+    }
+  };
+
+  const toggleNotificationModal = () => {
+    setIsNotificationModalVisible(!isNotificationModalVisible);
+    if (!isNotificationModalVisible) {
+      fetchFreelancerRequests(); 
+    }
+  };
+  
   const categories = [
     { id: 1, title: 'UI UX design', image: require('../assets/back.jpg'), screen: 'UiUx' },
     { id: 2, title: 'Animation', image: require('../assets/front.jpg'), screen: 'Animation' },
@@ -80,6 +142,58 @@ const HomePage = () => {
       <TouchableOpacity style={styles.addButton} onPress={toggleModal}>
         <Icon name="plus" size={24} color="white" />
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.notificationButton}
+        onPress={toggleNotificationModal}
+      >
+        <Icon name="bell" size={24} color="white" />
+      </TouchableOpacity>
+
+      <Modal
+        visible={isNotificationModalVisible}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={styles.modalcont}>
+          <ScrollView contentContainerStyle={styles.modalcontent}>
+            <Text style={styles.modalHeader}>Freelancer Requests</Text>
+
+            {freelancerRequests.length > 0 ? (
+              freelancerRequests.map((request) => (
+                <View key={request.id} style={styles.requestCard}>
+                  <Text style={styles.requestTitle}>Project : {request.projectName}</Text>
+                  <Text style={styles.requestDetail}>Freelancer : {request.freelancerUsername} </Text>
+                  <Text style={styles.requestDescription}>E-mail : {request.freelancerEmail}</Text>
+                  <View style={styles.buttonsContainer}>
+                    <TouchableOpacity
+                      style={styles.acceptButton}
+                      onPress={() => handleAccept(request.id)}
+                    >
+                      <Text style={styles.buttonText}>Accept</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.declineButton}
+                      onPress={() => handleDecline(request.id)}
+                    >
+                      <Text style={styles.buttonText}>Decline</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))
+            ) : (
+              <Text>No requests available</Text>
+            )}
+
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={toggleNotificationModal}
+            >
+              <Icon name="times" size={24} color="black" />
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+      </Modal>
       
       <Modal visible={isModalVisible} animationType="slide" transparent={true}>
         <KeyboardAvoidingView style={styles.modalContainer} behavior={Platform.OS === 'ios' ? 'padding' : null}>
@@ -130,6 +244,7 @@ const HomePage = () => {
           </View>
         </KeyboardAvoidingView>
       </Modal>
+
     </View>
   );
 };
@@ -179,7 +294,7 @@ const styles = StyleSheet.create({
   addButton: {
     position: 'absolute',
     right: 20,
-    bottom: 80,
+    bottom: 150,
     backgroundColor: 'green',
     width: 60,
     height: 60,
@@ -188,10 +303,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 5,
   },
-  chatButton: {
+  notificationButton: {
     position: 'absolute',
     right: 20,
-    bottom: 20,
+    bottom: 80,
     backgroundColor: 'blue',
     width: 60,
     height: 60,
@@ -238,6 +353,79 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
     zIndex: 1, 
+  },
+  modalcont: {
+    flex: 1,
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    position: 'absolute',      
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    zIndex: 1000,   
+  },
+  modalcontent: {
+    width: '90%',               
+    backgroundColor: 'white',    
+    borderRadius: 20,            
+    padding: 20,
+    alignItems: 'center',        
+    elevation: 5,                
+    shadowColor: '#000',         
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  requestCard: {
+    backgroundColor: '#f9f9f9', 
+    borderRadius: 15,
+    padding: 20,
+    marginBottom: 20,
+    width: '100%',               
+    elevation: 2,               
+    shadowColor: '#000',         
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  requestTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  requestDetail: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  requestDescription: {
+    fontSize: 14,
+    color: '#666',               
+    marginBottom: 15,
+  },
+  buttonsContainer: {
+    flexDirection: 'row',        
+    justifyContent: 'space-between',
+  },
+  acceptButton: {
+    backgroundColor: '#4CAF50',  
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    borderRadius: 30,            
+    marginRight: 10,
+  },
+  declineButton: {
+    backgroundColor: '#F44336', 
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    borderRadius: 30,           
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
