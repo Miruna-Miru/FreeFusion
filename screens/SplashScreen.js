@@ -31,7 +31,7 @@ const SplashScreen = () => {
       </Animated.View>
 
       <LottieView
-        source={require('../assets/splash.json')}
+        source={require('../assets/loader.json')}
         autoPlay
         loop={true}
         speed={1.5}
