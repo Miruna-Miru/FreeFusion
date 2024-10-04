@@ -1,26 +1,40 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function About({ navigation }) {
-  const animation = useRef(new Animated.Value(0)).current;
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const scrollViewRef = useRef(null);
 
   useEffect(() => {
-    
-    Animated.timing(animation, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
-  }, [animation]);
+   
+    const scrollAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(scrollY, {
+          toValue: 1, 
+          duration: 5000, 
+          useNativeDriver: true,
+        }),
+        Animated.timing(scrollY, {
+          toValue: 18, 
+          duration: 5000, 
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    scrollAnimation.start();
+
+    return () => scrollAnimation.stop();
+  }, [scrollY]);
 
   const animatedStyle = {
-    opacity: animation,
+    opacity: scrollY,
     transform: [
       {
-        translateY: animation.interpolate({
+        translateY: scrollY.interpolate({
           inputRange: [0, 1],
-          outputRange: [20, 0], 
+          outputRange: [20, 0],
         }),
       },
     ],
@@ -38,20 +52,35 @@ export default function About({ navigation }) {
 
       <Text style={styles.tagline}>Empowering Communities, Connecting People</Text>
 
-      <Animated.View style={[styles.detailsSection, animatedStyle]}>
-        <Text style={styles.detailsHeader}>Our Vision</Text>
-        <Text style={styles.detailsText}>
-          We envision a world where everyone has the opportunity to collaborate, learn, and grow together.
-        </Text>
-        <Text style={styles.detailsHeader}>Our Mission</Text>
-        <Text style={styles.detailsText}>
-          To provide a platform that facilitates communication, promotes inclusivity, and empowers users to achieve their goals.
-        </Text>
-        <Text style={styles.detailsHeader}>Join Us</Text>
-        <Text style={styles.detailsText}>
-          Become a part of our community today and help us make a difference!
-        </Text>
-      </Animated.View>
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.detailsSection}
+        contentContainerStyle={{ paddingBottom: 50 }}
+      >
+        <Animated.View style={animatedStyle}>
+          <Text style={styles.detailsHeader}>Our Vision</Text>
+          <Text style={styles.detailsText}>
+            To empower freelancers and customers by creating a dynamic platform that fosters collaboration,
+            creativity, and growth. We envision a world where every project can find the right talent,
+            and every freelancer has access to meaningful opportunities.
+          </Text>
+          <Text style={styles.detailsHeader}>Our Mission</Text>
+          <Text style={styles.detailsText}>
+            Our mission is to bridge the gap between freelancers and customers by providing a user-friendly
+            platform that facilitates seamless project posting, communication, and collaboration. We strive to
+            ensure that customers can easily find the right freelancers for their projects, whether they prefer
+            to post publicly or privately. Our goal is to foster a transparent environment where freelancers can
+            showcase their skills and expertise, while customers can confidently engage with talented professionals.
+          </Text>
+          <Text style={styles.detailsHeader}>Join Us</Text>
+          <Text style={styles.detailsText}>
+            Are you ready to take your projects to the next level? Join our community of freelancers and
+            customers today! Sign up now to post your projects, connect with talented freelancers,
+            and turn your ideas into reality. Whether you’re looking to hire or be hired, our platform
+            is designed to meet your needs. Let’s create together!
+          </Text>
+        </Animated.View>
+      </ScrollView>
     </View>
   );
 }
@@ -59,9 +88,9 @@ export default function About({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white', 
+    backgroundColor: 'white',
     padding: 16,
-    paddingTop: 40, 
+    paddingTop: 40,
   },
   header: {
     flexDirection: 'row',
@@ -71,7 +100,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: 'green',
-    fontSize: 24, 
+    fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -79,8 +108,8 @@ const styles = StyleSheet.create({
     width: 24,
   },
   tagline: {
-    color: '#485085', 
-    fontSize: 18, 
+    color: '#485085',
+    fontSize: 18,
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -88,13 +117,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   detailsHeader: {
-    color: '#green',
+    color: 'green',
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 5,
   },
   detailsText: {
-    color: '#485085', 
+    color: '#485085',
     fontSize: 16,
     lineHeight: 24,
     marginBottom: 15,

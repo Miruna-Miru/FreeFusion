@@ -53,6 +53,7 @@ const FreeHome = ({ route }) => {
     const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
     setCurrentDate(date.toLocaleDateString('en-US', options));
   }, []);
+
   const handleSendPress = async () => {
     if (selectedProject) {
       const email = selectedProject.contactInfo;
@@ -77,9 +78,9 @@ const FreeHome = ({ route }) => {
       console.log("Notification saved to Firestore");
     }
   };
-  
+
   return (
-    <ScrollView contentContainerStyle={styles.container}> 
+    <View style={styles.container}> 
       <NavBar username={username} userId={userId} /> 
       <View style={styles.dateContainer}>
         <Text style={styles.dateText}>{currentDate}</Text>
@@ -149,14 +150,14 @@ const FreeHome = ({ route }) => {
           )}
         </View>
       </Modal>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    justifyContent: 'center',
+    flex: 1,
+    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#fff',
     paddingTop: 40, 
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#d0f0c0',
+    color: 'grey',
   },
   userName: {
     fontSize: 20,
@@ -213,9 +214,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     marginBottom: 10,
-    elevation:1,
+    elevation: 1,
   },
-  
   cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -271,14 +271,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    marginTop: 15,
+    marginTop: 20,
   },
   iconButton: {
     backgroundColor: 'green',
     borderRadius: 5,
     padding: 10,
-    marginHorizontal: 5,
-    alignItems: 'center',
+    marginRight: 10,
   },
 });
 
