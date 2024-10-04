@@ -2,12 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function About({ navigation }) {
+export default function About({ navigation, route }) {
   const scrollY = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef(null);
 
   useEffect(() => {
-   
     const scrollAnimation = Animated.loop(
       Animated.sequence([
         Animated.timing(scrollY, {
@@ -43,7 +42,7 @@ export default function About({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('FreeSettings')}>
+        <TouchableOpacity onPress={() => navigation.navigate('FreeSettings', { userId: route.params.userId })}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
         <Text style={styles.title}>FreeFusion</Text>
@@ -96,36 +95,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    paddingBottom: 20,
+    color:'green'
   },
   title: {
-    color: 'green',
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
+    color:'green'
   },
   rightSpace: {
-    width: 24,
+    width: 30,
   },
   tagline: {
-    color: '#485085',
     fontSize: 18,
-    textAlign: 'center',
+    fontStyle: 'italic',
     marginBottom: 20,
+    textAlign: 'center',
   },
   detailsSection: {
-    marginTop: 20,
+    flex: 1,
+    marginBottom: 50,
   },
   detailsHeader: {
-    color: 'green',
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginTop: 20,
+    color:'green'
   },
   detailsText: {
-    color: '#485085',
     fontSize: 16,
     lineHeight: 24,
-    marginBottom: 15,
+    marginBottom: 10,
   },
 });

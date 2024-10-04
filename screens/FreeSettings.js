@@ -85,7 +85,7 @@ const FreeSettings = () => {
   };
 
   const handleAboutUsPress = () => {
-    navigation.navigate('About');
+    navigation.navigate('About', { userId });
   };
 
   return (
