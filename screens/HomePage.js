@@ -4,7 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { db, auth } from '../firebaseconfig';
 import LottieView from 'lottie-react-native';
-import { doc, setDoc, collection, query, where, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, query, where, getDocs, updateDoc, deleteDoc, increment, getDoc } from 'firebase/firestore';
 
 const HomePage = () => {
   const navigation = useNavigation();
@@ -54,13 +54,32 @@ const HomePage = () => {
   const handleAccept = async (requestId) => {
     try {
       const requestRef = doc(db, 'Freelancer_accept', requestId);
+      
+      // Get the request data to retrieve the freelancer's email
+      const requestDoc = await getDoc(requestRef); // Use getDoc instead of getDocs
+      if (!requestDoc.exists()) {
+        console.error('Request does not exist');
+        return;
+      }
+      
+      const requestData = requestDoc.data();
+      const freelancerUserId = requestData.freelancerUserId;
+  
+      // Update the request status to 'Accepted'
       await updateDoc(requestRef, { status: 'Accepted' });
-      fetchFreelancerRequests();
+  
+      // Increment the ongoing project count in the freelancer's document
+      const freelancerRef = doc(db, 'freelancers', freelancerUserId); // Adjust if the document ID is not the email
+      await updateDoc(freelancerRef, {
+        ongoingProject: increment(1) // Increment by 1
+      });
+  
+      fetchFreelancerRequests(); // Fetch updated requests
       setIsNotificationModalVisible(false);
     } catch (error) {
       console.error('Error accepting request: ', error);
     }
-  };
+  };  
 
   const handleDecline = async (requestId) => {
     try {

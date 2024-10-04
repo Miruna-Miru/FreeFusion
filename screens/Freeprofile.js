@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, Modal, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavBar from './NavBar';
-import { doc, getDoc } from 'firebase/firestore';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore'; // Add necessary imports
+import { useNavigation } from '@react-navigation/native';
 import { db } from '../firebaseconfig';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -13,19 +13,21 @@ const FreeProfile = ({ navigation, route }) => {
   const [specialization, setSpecialization] = useState('');
   const [additionalSpecialization, setAdditionalSpecialization] = useState('');
   const [avatarUri, setAvatarUri] = useState('');
-  const { username, userId } = route.params;
+  const { username, userId } = route.params; // userId is passed through route params
   const userLevel = "Top Rated";
   const [projectsCompleted, setProjectsCompleted] = useState(''); 
   const [ongoingProjectsCount, setOngoingProjectsCount] = useState('');
   const [rating, setRating] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [ongoingProjects, setOngoingProjects] = useState([]); // State for ongoing projects
+  const [email, setEmail] = useState(''); // State for email
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const userDocRef = doc(db, 'freelancers', userId); 
         const userDoc = await getDoc(userDocRef); 
-  
+
         if (userDoc.exists()) {
           const userData = userDoc.data();
           setAbout(userData.about);
@@ -37,6 +39,10 @@ const FreeProfile = ({ navigation, route }) => {
           if (userData.additionalSpecialization) {
             setAdditionalSpecialization(userData.additionalSpecialization); 
           }
+          setEmail(userData.email); // Set email from user data
+          
+          // Fetch ongoing projects after setting email
+          fetchOngoingProjects(userData.email);
         } else {
           Alert.alert("Error", "User profile not found!");
         }
@@ -45,9 +51,33 @@ const FreeProfile = ({ navigation, route }) => {
         Alert.alert("Error", "Could not fetch user profile details.");
       }
     };
-  
-    fetchUserProfile(); 
-  }, [userId]);
+
+    const fetchOngoingProjects = async (freelancerEmail) => {
+      if (!freelancerEmail) return; // Exit if email is not available
+      try {
+        const ongoingProjectsRef = collection(db, 'Freelancer_accept'); // Reference to the collection
+        const q = query(ongoingProjectsRef, where('freelancerEmail', '==', freelancerEmail)); // Query to find projects for the logged-in email
+        console.log(freelancerEmail);
+        const querySnapshot = await getDocs(q);
+        
+        const projects = [];
+        querySnapshot.forEach((doc) => {
+          projects.push({ id: doc.id, ...doc.data() }); // Store project details in the array
+        });
+        
+        setOngoingProjects(projects); // Set the ongoing projects state
+      } catch (error) {
+        console.error("Error fetching ongoing projects: ", error);
+        Alert.alert("Error", "Could not fetch ongoing projects.");
+      }
+    };
+
+    fetchUserProfile();
+  }, [userId]); // Add userId to the dependency array
+
+  useEffect(() => {
+    setOngoingProjects(); // Call to fetch ongoing projects after email is set
+  }, [email]); // This useEffect will run when the email is updated
 
   const handleEditIconPress = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -99,70 +129,69 @@ const FreeProfile = ({ navigation, route }) => {
       </TouchableOpacity>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <View style={styles.header}>
-        <View style={styles.avatarContainer}>
-          <Image
-            source={avatarUri ? { uri: avatarUri } : require('../assets/ml.jpg')}
-            style={styles.avatar}
-          />
-          <TouchableOpacity style={styles.editIcon} onPress={handleEditIconPress}>
-            <Icon name="edit" size={24} color="gray" />
-          </TouchableOpacity>
+        <View style={styles.header}>
+          <View style={styles.avatarContainer}>
+            <Image
+              source={avatarUri ? { uri: avatarUri } : require('../assets/ml.jpg')}
+              style={styles.avatar}
+            />
+            <TouchableOpacity style={styles.editIcon} onPress={handleEditIconPress}>
+              <Icon name="edit" size={24} color="gray" />
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.greeting}>Hi {username},</Text>
+          <Text style={styles.welcomeBack}>Welcome back</Text>
         </View>
-        <Text style={styles.greeting}>Hi {username},</Text>
-        <Text style={styles.welcomeBack}>Welcome back</Text>
-      </View>
 
-      <View style={styles.aboutBox}>
-        <View style={styles.aboutContent}>
-          <Text style={styles.statTitle}>About</Text>
-          <Text style={styles.aboutText}>{about}</Text>
+        <View style={styles.aboutBox}>
+          <View style={styles.aboutContent}>
+            <Text style={styles.statTitle}>About</Text>
+            <Text style={styles.aboutText}>{about}</Text>
+          </View>
         </View>
-      </View>
 
-      <View style={styles.specialistBox}>
-        <View style={styles.specialistContent}>
-          <Text style={styles.statTitle}>Specialist in</Text>
-          <Text style={styles.specialistText}>{specialization}</Text>
-        </View>
-      </View>
-
-      {additionalSpecialization ? (
         <View style={styles.specialistBox}>
           <View style={styles.specialistContent}>
-            <Text style={styles.statTitle}>Additional Specialization</Text>
-            <Text style={styles.specialistText}>{additionalSpecialization}</Text>
+            <Text style={styles.statTitle}>Specialist in</Text>
+            <Text style={styles.specialistText}>{specialization}</Text>
           </View>
         </View>
-      ) : null}
 
-      <View style={styles.statsContainer}>
-        <View style={styles.statBox}>
-          <Text style={styles.statTitle}>My level</Text>
-          <View style={styles.levelContainer}>
-            <Icon name="verified" size={20} color="green" /> 
-            <Text style={styles.statValue}>{userLevel}</Text>
+        {additionalSpecialization ? (
+          <View style={styles.specialistBox}>
+            <View style={styles.specialistContent}>
+              <Text style={styles.statTitle}>Additional Specialization</Text>
+              <Text style={styles.specialistText}>{additionalSpecialization}</Text>
+            </View>
+          </View>
+        ) : null}
+
+        <View style={styles.statsContainer}>
+          <View style={styles.statBox}>
+            <Text style={styles.statTitle}>My level</Text>
+            <View style={styles.levelContainer}>
+              <Icon name="verified" size={20} color="green" /> 
+              <Text style={styles.statValue}>{userLevel}</Text>
+            </View>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={styles.statTitle}>Projects Completed</Text>
+            <Text style={styles.statValue}>{projectsCompleted}</Text>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={styles.statTitle}>Ongoing Projects</Text>
+            <Text style={styles.statValue}>{ongoingProjectsCount}</Text>
+          </View>
+          <View style={styles.ratingBox}>
+            <Text style={styles.statTitle}>Rating</Text>
+            <View style={styles.ratingContainer}>
+              {renderStars(rating)}
+              <Text style={styles.statValue}>{rating}</Text>
+            </View>
           </View>
         </View>
-        <View style={styles.statBox}>
-          <Text style={styles.statTitle}>Projects Completed</Text>
-          <Text style={styles.statValue}>{projectsCompleted}</Text>
-        </View>
-        <View style={styles.statBox}>
-          <Text style={styles.statTitle}>Ongoing Projects</Text>
-          <Text style={styles.statValue}>{ongoingProjectsCount}</Text>
-        </View>
-        <View style={styles.ratingBox}>
-          <Text style={styles.statTitle}>Rating</Text>
-          <View style={styles.ratingContainer}>
-            {renderStars(rating)}
-            <Text style={styles.statValue}>{rating}</Text>
-          </View>
-        </View>
-      </View>
       </ScrollView>
 
-      {/* Modal for Sliding Window */}
       <Modal 
         visible={isModalVisible} 
         transparent={true} 
@@ -172,11 +201,15 @@ const FreeProfile = ({ navigation, route }) => {
           <View style={styles.modalContent}>
             <ScrollView>
               <Text style={styles.modalTitle}>Ongoing Projects</Text>
-              {/* Placeholder for the list of ongoing projects */}
-              <Text style={styles.projectItem}>Project 1: Building UI</Text>
-              <Text style={styles.projectItem}>Project 2: API Integration</Text>
-              <Text style={styles.projectItem}>Project 3: Debugging Issues</Text>
-              {/* Add more ongoing projects here */}
+              {ongoingProjects && ongoingProjects.length > 0 ? ( // Check if ongoingProjects is defined and has items
+                ongoingProjects.map((project) => (
+                  <Text key={project.projectName} style={styles.projectItem}>
+                    {project.title}: {project.description} {/* Assuming project has title and description */}
+                  </Text>
+                ))
+              ) : (
+                <Text style={styles.projectItem}>No ongoing projects found.</Text>
+              )}
             </ScrollView>
             <TouchableOpacity style={styles.closeButton} onPress={toggleModal}>
               <Icon name="close" size={24} color="white" />
