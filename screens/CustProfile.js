@@ -144,6 +144,7 @@ export default function CustProfile({ navigation, route }) {
 const styles = StyleSheet.create({
     container: {
         padding: 20,
+        flex:1,
         backgroundColor: '#fff',
     },
     fieldContainer: {
