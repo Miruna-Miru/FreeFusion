@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput,
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { db, auth } from '../firebaseconfig'; 
+import LottieView from 'lottie-react-native';
 import { doc, setDoc, collection, query, where, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
 
 const HomePage = () => {
@@ -87,11 +88,16 @@ const HomePage = () => {
   };
   
   const categories = [
-    { id: 1, title: 'UI UX design', image: require('../assets/back.jpg'), screen: 'UiUx' },
-    { id: 2, title: 'Animation', image: require('../assets/front.jpg'), screen: 'Animation' },
-    { id: 3, title: 'App Developer', image: require('../assets/uiux.jpg'), screen: 'FullStack' },
-    { id: 4, title: 'Web Development', image: require('../assets/ml.jpg'), screen: 'ML' },
-    { id: 5, title: 'Data Science', image: require('../assets/data.jpg'), screen: 'DS' },
+    { id: 1, title: 'UI UX design', lottie: require('../assets/ani3.json'), screen: 'UiUx' },
+    { id: 2, title: 'Animation', lottie: require('../assets/ani1.json'), screen: 'Animation' },
+    { id: 3, title: 'App Developer', lottie: require('../assets/ani2.json'), screen: 'FullStack' },
+    {
+      id: 4,
+      title: 'Web Development',
+      lottie: require('../assets/ani5.json'), 
+      screen: 'ML',
+    },
+    { id: 5, title: 'Data Science', lottie: require('../assets/ani4.json'), screen: 'DS' },
   ];
 
   const toggleModal = () => setIsModalVisible(!isModalVisible);
@@ -124,18 +130,27 @@ const HomePage = () => {
       </TouchableOpacity>
       <Text style={styles.headerText}>Explore Top Categories</Text>
       <ScrollView contentContainerStyle={styles.cardsContainer}>
-        {categories.map((category) => (
-          <View key={category.id} style={styles.card}>
-            <Image source={category.image} style={styles.cardImage} />
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{category.title}</Text>
-              <TouchableOpacity onPress={() => navigation.navigate(category.screen)}>
-                <Text style={styles.cardButton}>&gt;</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+  {categories.map((category) => (
+    <View key={category.id} style={styles.card}>
+      {category.lottie ? ( // Check if lottie animation exists
+        <LottieView
+          source={category.lottie}
+          autoPlay
+          loop
+          style={styles.lottieAnimation} 
+        />
+      ) : (
+        <Image source={category.image} style={styles.cardImage} />
+      )}
+      <View style={styles.cardContent}>
+        <Text style={styles.cardTitle}>{category.title}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate(category.screen)}>
+          <Text style={styles.cardButton}>&gt;</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  ))}
+</ScrollView>
       <TouchableOpacity style={styles.notificationButton} onPress={toggleNotificationModal}>
         <Icon name="bell" size={24} color="white" />
       </TouchableOpacity>
@@ -235,6 +250,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 16,
+  },
+  lottieAnimation: {
+    height: 120, 
+    width: 170,
+    borderRadius: 8,
   },
   postProjectText: {
     color: 'black',
