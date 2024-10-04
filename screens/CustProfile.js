@@ -69,51 +69,68 @@ export default function CustProfile({ navigation, route }) {
     };
 
     const handleNavigateHome = () => {
-        navigation.navigate('HomePage',{userId});
+        navigation.navigate('Home', { userId });
+    };
+
+    const handleLogout = () => {
+        navigation.navigate('Login');
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.label}>Username:</Text>
-            {isEditing ? (
-                <TextInput
-                    style={styles.input}
-                    value={username}
-                    onChangeText={setUsername}
-                />
-            ) : (
-                <Text style={styles.text}>{username}</Text>
-            )}
+            <View style={styles.fieldContainer}>
+                <Text style={styles.label}>Username:</Text>
+                {isEditing ? (
+                    <TextInput
+                        style={styles.input}
+                        value={username}
+                        onChangeText={setUsername}
+                    />
+                ) : (
+                    <Text style={styles.text}>{username}</Text>
+                )}
+            </View>
 
-            <Text style={styles.label}>Email:</Text>
-            {isEditing ? (
-                <TextInput
-                    style={styles.input}
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                />
-            ) : (
-                <Text style={styles.text}>{email}</Text>
-            )}
+            <View style={styles.fieldContainer}>
+                <Text style={styles.label}>Email:</Text>
+                {isEditing ? (
+                    <TextInput
+                        style={styles.input}
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                    />
+                ) : (
+                    <Text style={styles.text}>{email}</Text>
+                )}
+            </View>
 
-            <Text style={styles.label}>Address:</Text>
-            {isEditing ? (
-                <TextInput
-                    style={styles.input}
-                    value={address}
-                    onChangeText={setAddress}
-                />
-            ) : (
-                <Text style={styles.text}>{address}</Text>
-            )}
+            <View style={styles.fieldContainer}>
+                <Text style={styles.label}>Address:</Text>
+                {isEditing ? (
+                    <TextInput
+                        style={styles.input}
+                        value={address}
+                        onChangeText={setAddress}
+                    />
+                ) : (
+                    <Text style={styles.text}>{address}</Text>
+                )}
+            </View>
 
-            <TouchableOpacity style={styles.button} onPress={handleEditToggle}>
-                <Text style={styles.buttonText}>{isEditing ? "Save" : "Edit"}</Text>
-            </TouchableOpacity>
+           
+            <View style={styles.iconButtonsContainer}>
+                <TouchableOpacity style={styles.iconButton} onPress={handleEditToggle}>
+                    <Icon name={isEditing ? "save-outline" : "pencil-outline"} size={24} color="white" />
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.iconButton} onPress={handleNavigateHome}>
+                    <Icon name="home-outline" size={24} color="white" />
+                </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity style={styles.button} onPress={handleNavigateHome}>
-                <Text style={styles.buttonText}>Go to Home Page</Text>
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                <Text style={styles.logoutButtonText}>Logout</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAccount}>
@@ -129,6 +146,12 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#fff',
     },
+    fieldContainer: {
+        backgroundColor: 'rgba(144, 238, 144, 0.1)',
+        padding: 10,
+        borderRadius: 5,
+        marginBottom: 15,
+    },
     label: {
         fontSize: 16,
         fontWeight: 'bold',
@@ -136,23 +159,37 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 16,
-        marginBottom: 15,
     },
     input: {
         borderWidth: 1,
         borderColor: 'green',
         borderRadius: 5,
         padding: 10,
-        marginBottom: 15,
     },
-    button: {
-        backgroundColor: '#green',
+    iconButtonsContainer: {
+        flexDirection: 'row', 
+        justifyContent: 'space-between',
+        alignSelf: 'flex-end', 
+        marginVertical: 10,
+    },
+    iconButton: {
+        backgroundColor: 'green',
+        padding: 15,
+        borderRadius: 10, 
+        marginHorizontal: 5, 
+        width: 60, 
+        height: 60,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    logoutButton: {
+        backgroundColor: '#FFA500',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
         marginVertical: 5,
     },
-    buttonText: {
+    logoutButtonText: {
         color: 'white',
         fontSize: 16,
         fontWeight: 'bold',

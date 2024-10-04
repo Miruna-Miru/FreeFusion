@@ -141,7 +141,8 @@ const HomePage = () => {
         <Text style={styles.postProjectText}>Ready to take on new challenges? Post your project now!</Text>
         <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
           <TouchableOpacity style={styles.postButton} onPress={toggleModal}>
-            <Icon name="plus" size={24} color="white" />
+            
+            <Text style={styles.postProjectTextB}> 👉  Make a public call!</Text>
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -259,6 +260,11 @@ const styles = StyleSheet.create({
   },
   postProjectText: {
     color: 'black',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  postProjectTextB: {
+    color: 'white',
     fontSize: 16,
     textAlign: 'center',
   },
