@@ -51,7 +51,7 @@ export default function LoginPage({ navigation }) {
         
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const userId = userCredential.user.uid;
-  
+        console.log(userId);
         let snapshot, username;
   
         if (isFreelancerTab) {

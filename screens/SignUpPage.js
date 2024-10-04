@@ -32,6 +32,7 @@ const SignUp = ({ navigation }) => {
 
         const additionalFreelancerData = activeTab === 'Freelancer' ? {
           projectCount: 0,
+          ongoingProject: 0,
           rating: 0
         } : {};
 

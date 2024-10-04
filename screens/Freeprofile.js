@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, Modal, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavBar from './NavBar';
 import { doc, getDoc } from 'firebase/firestore';
@@ -16,7 +16,9 @@ const FreeProfile = ({ navigation, route }) => {
   const { username, userId } = route.params;
   const userLevel = "Top Rated";
   const [projectsCompleted, setProjectsCompleted] = useState(''); 
+  const [ongoingProjectsCount, setOngoingProjectsCount] = useState('');
   const [rating, setRating] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -29,7 +31,8 @@ const FreeProfile = ({ navigation, route }) => {
           setAbout(userData.about);
           setSpecialization(userData.specialization);
           setAvatarUri(userData.avatarUri || '');
-          setProjectsCompleted(userData.projectCount?.toString() || '0'); 
+          setProjectsCompleted(userData.projectCount?.toString() || ''); 
+          setOngoingProjectsCount(userData.ongoingProject?.toString() || '0'); 
           setRating(userData.rating?.toString() || '0'); 
           if (userData.additionalSpecialization) {
             setAdditionalSpecialization(userData.additionalSpecialization); 
@@ -85,12 +88,17 @@ const FreeProfile = ({ navigation, route }) => {
     navigation.goBack();
   };
 
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible); // Toggle the modal visibility
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={handlePress}>
         <Icon name="arrow-back" size={24} color="black"/>
       </TouchableOpacity>
 
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
           <Image
@@ -140,6 +148,10 @@ const FreeProfile = ({ navigation, route }) => {
           <Text style={styles.statTitle}>Projects Completed</Text>
           <Text style={styles.statValue}>{projectsCompleted}</Text>
         </View>
+        <View style={styles.statBox}>
+          <Text style={styles.statTitle}>Ongoing Projects</Text>
+          <Text style={styles.statValue}>{ongoingProjectsCount}</Text>
+        </View>
         <View style={styles.ratingBox}>
           <Text style={styles.statTitle}>Rating</Text>
           <View style={styles.ratingContainer}>
@@ -148,6 +160,35 @@ const FreeProfile = ({ navigation, route }) => {
           </View>
         </View>
       </View>
+      </ScrollView>
+
+      {/* Modal for Sliding Window */}
+      <Modal 
+        visible={isModalVisible} 
+        transparent={true} 
+        animationType="slide"
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <ScrollView>
+              <Text style={styles.modalTitle}>Ongoing Projects</Text>
+              {/* Placeholder for the list of ongoing projects */}
+              <Text style={styles.projectItem}>Project 1: Building UI</Text>
+              <Text style={styles.projectItem}>Project 2: API Integration</Text>
+              <Text style={styles.projectItem}>Project 3: Debugging Issues</Text>
+              {/* Add more ongoing projects here */}
+            </ScrollView>
+            <TouchableOpacity style={styles.closeButton} onPress={toggleModal}>
+              <Icon name="close" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Floating Button */}
+      <TouchableOpacity style={styles.floatingButton} onPress={toggleModal}>
+        <Icon name="list" size={24} color="white" />
+      </TouchableOpacity>
 
       <NavBar/>
     </View>
@@ -267,6 +308,49 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 60,
+    right: 20,
+    backgroundColor: 'green', 
+    borderRadius: 50,
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    marginLeft: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Background transparency
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '50%', // Limit modal height
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  projectItem: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'red',
+    borderRadius: 20,
+    padding: 5,
   },
 });
 
