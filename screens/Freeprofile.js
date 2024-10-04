@@ -7,26 +7,33 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { db } from '../firebaseconfig';
 import * as ImagePicker from 'expo-image-picker';
 
-const FreeProfile = ({ route }) => {
+const FreeProfile = ({ navigation, route }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [about, setAbout] = useState('');
   const [specialization, setSpecialization] = useState('');
+  const [additionalSpecialization, setAdditionalSpecialization] = useState('');
   const [avatarUri, setAvatarUri] = useState('');
   const { username, userId } = route.params;
   const userLevel = "Top Rated";
-  const projectsCompleted = 15; 
-  const rating = 4.5;
+  const [projectsCompleted, setProjectsCompleted] = useState(''); 
+  const [rating, setRating] = useState('');
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const userDocRef = doc(db, 'freelancers', userId); 
         const userDoc = await getDoc(userDocRef); 
-
+  
         if (userDoc.exists()) {
-          setAbout(userDoc.data().about);
-          setSpecialization(userDoc.data().specialization);
-          setAvatarUri(userDoc.data().avatarUri || '');
+          const userData = userDoc.data();
+          setAbout(userData.about);
+          setSpecialization(userData.specialization);
+          setAvatarUri(userData.avatarUri || '');
+          setProjectsCompleted(userData.projectCount?.toString() || '0'); 
+          setRating(userData.rating?.toString() || '0'); 
+          if (userData.additionalSpecialization) {
+            setAdditionalSpecialization(userData.additionalSpecialization); 
+          }
         } else {
           Alert.alert("Error", "User profile not found!");
         }
@@ -35,9 +42,9 @@ const FreeProfile = ({ route }) => {
         Alert.alert("Error", "Could not fetch user profile details.");
       }
     };
-
+  
     fetchUserProfile(); 
-  }, [userId]); 
+  }, [userId]);
 
   const handleEditIconPress = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -111,6 +118,15 @@ const FreeProfile = ({ route }) => {
           <Text style={styles.specialistText}>{specialization}</Text>
         </View>
       </View>
+
+      {additionalSpecialization ? (
+        <View style={styles.specialistBox}>
+          <View style={styles.specialistContent}>
+            <Text style={styles.statTitle}>Additional Specialization</Text>
+            <Text style={styles.specialistText}>{additionalSpecialization}</Text>
+          </View>
+        </View>
+      ) : null}
 
       <View style={styles.statsContainer}>
         <View style={styles.statBox}>

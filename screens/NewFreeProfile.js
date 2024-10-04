@@ -15,7 +15,7 @@ const NewFreeProfile = ({ route }) => {
   const [isAdditionalSpecializationVisible, setIsAdditionalSpecializationVisible] = useState(false);
   const [addOther, setAddOther] = useState(false); 
   const [isChecked, setIsChecked] = useState(false);
-  const animation = new Animated.Value(0); // Animation for jumping text
+  const animation = new Animated.Value(0); 
 
   const navigation = useNavigation();
 
@@ -37,10 +37,9 @@ const NewFreeProfile = ({ route }) => {
     };
 
     fetchEmail(); 
-    startJumpAnimation(); // Start the jumping animation
+    startJumpAnimation(); 
   }, [userId]);
 
-  // Function to start continuous jumping animation
   const startJumpAnimation = () => {
     Animated.loop(
       Animated.sequence([
@@ -68,19 +67,21 @@ const NewFreeProfile = ({ route }) => {
       Alert.alert("Error", "Please fill in all mandatory fields!");
       return;
     }
-
+  
+    const additionalSpec = addOther && additionalSpecialization ? additionalSpecialization : null;
+  
     try {
-      console.log('Trying to update document with UID:', userId); 
-
-      const userDocRef = doc(db, 'freelancers', userId); 
-
+      console.log('Trying to update document with UID:', userId);
+  
+      const userDocRef = doc(db, 'freelancers', userId);
+  
       await updateDoc(userDocRef, {
         about,
         specialization,
-        additionalSpecialization: isAdditionalSpecializationVisible ? additionalSpecialization : null,
+        additionalSpecialization: additionalSpec,
       });
-
-      Alert.alert("Profile Submitted", `About: ${about}, Specialization: ${specialization}`);
+  
+      Alert.alert("Profile Submitted", `About: ${about}, Specialization: ${specialization}, Additional Specialization: ${additionalSpec}`);
       navigation.navigate('FreeHome', { username, userId });
     } catch (error) {
       console.error('Error updating document: ', error);

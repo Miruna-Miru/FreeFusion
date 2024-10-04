@@ -29,9 +29,16 @@ const SignUp = ({ navigation }) => {
           address,
         };
         const collectionName = activeTab === 'Customer' ? 'customers' : 'freelancers';
+
+        const additionalFreelancerData = activeTab === 'Freelancer' ? {
+          projectCount: 0,
+          rating: 0
+        } : {};
+
         await setDoc(doc(db, collectionName, userId), {
           ...userData,
           uid: userId, 
+          ...additionalFreelancerData,
         });
         alert('Sign up successful!');
         if (activeTab === 'Customer') {
