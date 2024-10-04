@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Modal, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useEffect ,useRef} from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Modal, KeyboardAvoidingView, Platform , Animated, Easing} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { db, auth } from '../firebaseconfig';
@@ -106,15 +106,44 @@ const HomePage = () => {
         console.error("Error saving request: ", error);
       }
     }
+
   };
+  const scaleValue = useRef(new Animated.Value(1)).current; 
+
+  useEffect(() => {
+    
+    const startZoomAnimation = () => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(scaleValue, {
+            toValue: 1.05, 
+            duration: 500,
+            easing: Easing.linear,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleValue, {
+            toValue: 1, 
+            duration: 500,
+            easing: Easing.linear,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    };
+
+    startZoomAnimation();
+  }, [scaleValue]);
+
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isModalVisible && styles.blurredBackground]}>
       <View style={styles.postProjectContainer}>
         <Text style={styles.postProjectText}>Ready to take on new challenges? Post your project now!</Text>
-        <TouchableOpacity style={styles.postButton} onPress={toggleModal}>
-          <Icon name="plus" size={24} color="white" />
-        </TouchableOpacity>
+        <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+          <TouchableOpacity style={styles.postButton} onPress={toggleModal}>
+            <Icon name="plus" size={24} color="white" />
+          </TouchableOpacity>
+        </Animated.View>
       </View>
       <Text style={styles.headerText}>Explore Top Categories</Text>
       <ScrollView contentContainerStyle={styles.cardsContainer}>
@@ -130,7 +159,29 @@ const HomePage = () => {
           </View>
         ))}
       </ScrollView>
-      
+
+      <Modal visible={isModalVisible} animationType="slide" transparent={true}>
+        <KeyboardAvoidingView style={styles.modalContainer} behavior={Platform.OS === 'ios' ? 'padding' : null}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity style={styles.closeButton} onPress={toggleModal}>
+              <Icon name="times" size={24} color="black" />
+            </TouchableOpacity>
+            <Text style={styles.modalHeader}>New Project</Text>
+            <TextInput style={styles.input} placeholder="Company Name" value={formData.companyName} onChangeText={(value) => handleInputChange('companyName', value)} />
+            <TextInput style={styles.input} placeholder="Project Title" value={formData.projectTitle} onChangeText={(value) => handleInputChange('projectTitle', value)} />
+            <TextInput style={styles.input} placeholder="Description" value={formData.description} onChangeText={(value) => handleInputChange('description', value)} />
+            <TextInput style={styles.input} placeholder="Duration" value={formData.duration} onChangeText={(value) => handleInputChange('duration', value)} />
+            <TextInput style={styles.input} placeholder="Salary" value={formData.salary} onChangeText={(value) => handleInputChange('salary', value)} />
+            <TextInput style={styles.input} placeholder="Contact Info" value={formData.contactInfo} editable={false} />
+            <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+              <Icon name="send" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+      <TouchableOpacity style={styles.notificationButton} onPress={toggleNotificationModal}>
+        <Icon name="bell" size={24} color="white" />
+      </TouchableOpacity>
       <Modal visible={isNotificationModalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalcont}>
           <ScrollView contentContainerStyle={styles.modalcontent}>
@@ -192,6 +243,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 16,
   },
+  blurredBackground: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  },
   lottieAnimation: {
     height: 120,
     width: 170,
@@ -206,19 +260,21 @@ const styles = StyleSheet.create({
   postProjectText: {
     color: 'black',
     fontSize: 16,
+    textAlign: 'center',
   },
   postButton: {
-    backgroundColor: '#4CAF50',
-    borderRadius: 50,
-    padding: 12,
-    alignSelf: 'flex-end',
-    marginTop: -40,
+    backgroundColor: 'green',
+    padding: 8,
+    borderRadius: 8,
+    alignSelf: 'left',
+    marginTop: 8,
   },
   headerText: {
-    color: 'green',
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginVertical: 12,
+    marginBottom: 16,
+    textAlign: 'left',
+    color: 'green',
   },
   cardsContainer: {
     flexDirection: 'row',
@@ -228,87 +284,22 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: 'rgba(144, 238, 144, 0.1)',
     borderRadius: 8,
-    width: '48%',
+    padding: 16,
     marginBottom: 16,
+    width: '48%',
   },
   cardContent: {
-    padding: 12,
+    marginTop: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   cardTitle: {
-    color: '#333',
     fontSize: 16,
     fontWeight: 'bold',
   },
   cardButton: {
-    color: '#4CAF50',
     fontSize: 24,
-  },
-  notificationButton: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    backgroundColor: '#4CAF50',
-    borderRadius: 50,
-    padding: 12,
-  },
-  modalcont: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalcontent: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 8,
-    width: '90%',
-    alignItems: 'center',
-  },
-  modalHeader: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  requestCard: {
-    backgroundColor: '#f2f2f2',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 16,
-    width: '100%',
-  },
-  requestTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  requestDetail: {
-    fontSize: 14,
-  },
-  requestDescription: {
-    fontSize: 12,
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-  },
-  acceptButton: {
-    backgroundColor: '#4CAF50',
-    padding: 8,
-    borderRadius: 8,
-  },
-  declineButton: {
-    backgroundColor: '#f44336',
-    padding: 8,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
+    color: 'green',
   },
   modalContainer: {
     flex: 1,
@@ -320,20 +311,89 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 8,
     width: '90%',
+    elevation: 10,
+  },
+  modalHeader: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: 'green',
   },
   input: {
-    borderColor: '#ddd',
     borderWidth: 1,
-    padding: 12,
+    borderColor: 'green',
     borderRadius: 8,
-    marginBottom: 16,
-    width: '100%',
+    padding: 8,
+    marginBottom: 8,
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
   },
   sendButton: {
-    backgroundColor: '#4CAF50',
-    padding: 12,
+    backgroundColor: 'green',
+    padding: 8,
     borderRadius: 8,
     alignItems: 'center',
+  },
+  notificationButton: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    backgroundColor: 'green',
+    padding: 12,
+    borderRadius: 25,
+  },
+  modalcont: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalcontent: {
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 8,
+    width: '90%',
+  },
+  requestCard: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+  },
+  requestTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  requestDetail: {
+    fontSize: 14,
+  },
+  requestDescription: {
+    fontSize: 12,
+    marginBottom: 8,
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  acceptButton: {
+    backgroundColor: 'green',
+    padding: 8,
+    borderRadius: 8,
+  },
+  declineButton: {
+    backgroundColor: 'red',
+    padding: 8,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  closeButtonR: {
+    alignSelf: 'flex-end',
+    padding: 8,
+    marginTop: 16,
   },
 });
 
