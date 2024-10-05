@@ -201,10 +201,10 @@ const FreeProfile = ({ navigation, route }) => {
           <View style={styles.modalContent}>
             <ScrollView>
               <Text style={styles.modalTitle}>Ongoing Projects</Text>
-              {ongoingProjects && ongoingProjects.length > 0 ? ( // Check if ongoingProjects is defined and has items
+              {ongoingProjects && ongoingProjects.length > 0 ? (
                 ongoingProjects.map((project) => (
                   <Text key={project.projectName} style={styles.projectItem}>
-                    {project.title}: {project.description} {/* Assuming project has title and description */}
+                    {project.title}: {project.description} 
                   </Text>
                 ))
               ) : (
